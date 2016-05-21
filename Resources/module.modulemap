@@ -1,0 +1,8 @@
+module TwitterLoggingService {
+    umbrella header "TwitterLoggingService.h"
+
+    export *
+    module * {
+        export *
+    }
+}

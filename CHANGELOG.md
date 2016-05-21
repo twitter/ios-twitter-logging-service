@@ -1,0 +1,72 @@
+# Twitter Logging Service Change Log
+
+## Info
+
+**Document version:** 2.2.0
+
+**Last updated:** 05/19/2016
+
+**Author:** Nolan O'Brien
+
+## History
+
+### 2.2.0
+
+- Remove `TLSFileFunctionLine` struct since it is too easy to make mistakes such as constructing the struct on the stack with stack C-string values then accessing copies of the struct from other threads that should not have references to the stack C-string values. 
+
+### 2.1.1   (05/04/2016)
+
+- Add `threadName` to `TLSLogMessageInfo` for additional context
+
+### 2.1.0   (03/23/2016)
+
+- Refactor coding style/conventions to be better aligned with open source best practices
+- Absolute minimal executable code changes
+
+### 2.0.0   (02/25/2016)
+
+- Rename `TFNLogging` to `TwitterLoggingService`
+
+### 1.2.5   (02/03/2016)
+
+- Add Swift support
+- Simplify _Crashlytics_ support by delegating responsibility of calling `CLSLog` to the subclass of `TLSCrashlyticsOutputStream`
+
+### 1.2.1   (09/11/2015)
+
+- Optimize log message filtering by moving quick filter checks to a concurrent queue
+
+### 1.2.0   (06/12/2014) - Kirk Beitz
+
+- Made class `TLSFileOutputStream` more abstract as a base + protected implementation
+- no longer implements @protocol `TLSDataRetrieval`
+- keeps the generic readonly @property 'constants', but makes them @protected
+- implements one default initializer taking a logging directory and a file name
+- implements one convenience initializer taking a file name and making use of the default logging directory
+- makes 'init' NS_UNAVAILABLE
+- keeps the public `defaultLogFileDirectory` class method & the `tls_outputLogInfo:` and `tls_flush` methods
+- keep the several protected `(void)write` methods
+- refactor some portions of `(instancetype)initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error:` to new protected `createLogFileDirectoryPath:error:` & `openLogFile:error:`
+
+- Made new protocol `TLSFileOutputStreamEvent` based on methods that had been "abstract" and "overrideable" in the old TLSFileOutputStream
+- makes use of the new typedef `TLSFileOutputEvent` for the first argument of all functions
+
+- Made new class `TLSRollingFileOutputStream` as a concrete implementation of `TLSFileOutputStream`
+- copied over all of the old initializers from `TLSFileOutputStream`
+- copied over from `TLSFileOutputStream` the @property items that were specific to rolling file output stream
+- interface creates new NS_ENUM `TLSRollingFileOutputEvent` (based upon `TLSFileOutputEvent` and override-able `fileStreamEvent` methods
+- takes over implementation of protocol `TLSDataRetrieval`
+- takes over implementation of `fileOutputEventBegan/Finished/Failed` methods via implementation of the @protocol `TLSFileOutputStreamEvent`
+
+### 1.1.0   (04/09/2014)
+
+- Remove `permittedLoggingLevels` and `shouldFilterChannelsThatAreOff` to completely decouple the filtering from the `TLSLoggingService`.  All output streams control their own destiny now.
+
+### 1.0.1   (01/16/2014)
+
+- Expand maximum bytes per log file from 128MB to 1GB.
+- Add `flushAfterEveryWriteEnabled` property to `TLSLoggingService`.
+
+### 1.0.0  (01/01/2014)
+
+- Initial production release
