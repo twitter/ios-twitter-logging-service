@@ -42,8 +42,6 @@ The logging service marshals the message and its context to a background queue f
 
 `TLSLog.h` is the principal header for using *TwitterLoggingService*.  Just include `TLSLog.h` or `@import TwitterLoggingService`.
 
-The *TwitterLoggingService* library is composed of a primary header (this file) and numerous secondary headers.
-
 // The primary macros for *TwitterLoggingService*
 
 TLSLogError(channel, ...)          // Log at the TLSLogLevelError level
@@ -52,8 +50,7 @@ TLSLogInformation(channel, ...)    // Log at the TLSLogLevelInformation level
 TLSLogDebug(channel, ...)          // Log at the TLSLogLevelDebug level
 
 For each of the `TLSLog` family of macros, `TLSCanLog` is called first to gate whether the actual
-logging should occur.  This saves us from having to evaluate the arguments to the log message and can provide a win in performance when calling a
-`TLSLog` macro that will never end up being logged.  For more on `TLSCanLog` see `Gating TLSLog messages` below.
+logging should occur.  This saves us from having to evaluate the arguments to the log message and can provide a win in performance when calling a `TLSLog` macro that will never end up being logged.  For more on `TLSCanLog` see `Gating TLSLog messages` below.
 
 ## TLSLog Core Macro
 
@@ -102,9 +99,7 @@ Setting up your project to use *TwitterLoggingService*:
 
 3) Set up your project to build the *TwitterLoggingService* project with `DEBUG=1` in debug builds and `RELEASE=1` in release builds.
 
-4) Add `#import <TwitterLoggingService/TLSLog.h>` or `@import TwitterLoggingService.TLSLog;` to your project's precompiled header (.pch file)
-
-5) Set up the `TLSLoggingService` singleton on application startup (often in `application:didFinishLaunchingWithOptions:` of your `UIApplication`'s delegate for iOS).
+4) Set up the `TLSLoggingService` singleton on application startup (often in `application:didFinishLaunchingWithOptions:` of your `UIApplication`'s delegate for iOS).
 
 ```
 @import TLSLoggingKit;
@@ -113,16 +108,16 @@ Setting up your project to use *TwitterLoggingService*:
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)options
 {
-// ...
+    // ...
 
-// Set up the Twitter Logging Service!
-TLSLoggingService *logger = [TLSLoggingService sharedInstance];
+    // Set up the Twitter Logging Service!
+    TLSLoggingService *logger = [TLSLoggingService sharedInstance];
 #if DEBUG
-[logger addOutputStream:[[TLSNSLogOutputStream alloc] init]];
+    [logger addOutputStream:[[TLSNSLogOutputStream alloc] init]];
 #endif
-[logger addOutputStream:[[TLSFileOutputStream alloc] initWithLogFileName:@"appname-info.log"]];
+    [logger addOutputStream:[[TLSFileOutputStream alloc] initWithLogFileName:@"appname-info.log"]];
 
-// ...
+    // ...
 }
 
 // ...
@@ -130,15 +125,15 @@ TLSLoggingService *logger = [TLSLoggingService sharedInstance];
 // Someplace else in your project
 - (void)foo
 {
-//  ...
+    //  ...
 
-if (error) {
-TLSLogError(TLSLogChannelDefault, @"Encountered an error while performing foo: %@", error);
-} else {
-TLSLogInformation(@"Verbose", @"foo executed flawlessly!");
-}
+    if (error) {
+        TLSLogError(TLSLogChannelDefault, @"Encountered an error while performing foo: %@", error);
+    } else {
+        TLSLogInformation(@"Verbose", @"foo executed flawlessly!");
+    }
 
-// ...
+    // ...
 }
 ```
 
@@ -158,9 +153,10 @@ If in doubt, you can log to the `TLSLogLevelDebug` log level, which is only ever
 
 ## TLSLogChannelApplicationDefault function
 
+```
 FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault() __attribute__((const));
-
 #define TLSLogChannelDefault TLSLogChannelApplicationDefault()
+```
 
 Retrieve a channel based on the application.  You can use this as a default channel.
 
@@ -181,7 +177,7 @@ The default channel is available as a convenience for quick logging.  However, i
 There are a number of **TLSLog Helper Functions** and they all accept as a first parameter a `TLSLoggingService`.
 If `nil` is provided for this parameter, the shared `[TLSLoggingService sharedInstance]` will be used.
 All `TLSLog` macros use `nil`, but if there is different instance to be used, these helper functions support that.
-As an example, Twitter extends *TwitterLoggingService* with its own set of macros so that a context is provided that defines the duration for which a message can be safely retained (e.g. to avoid retaining sensitive information), and uses custom macros that and uses custom macros that call these helper functions.
+As an example, Twitter extends *TwitterLoggingService* with its own set of macros so that a context is provided that defines the duration for which a message can be safely retained (e.g. to avoid retaining sensitive information), and uses custom macros that call these helper functions.
 
 ## Gating TLSLog messages
 
@@ -191,7 +187,7 @@ BOOL TLSCanLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel,
 
 At the moment, `TLSCanLog` evaluates two things (*contextObject* is currently ignored): the cached permitted log levels and the cached not permitted log channels.
 A log message can log given the desired *level* is permitted by the internal cache of known permitted `TLSLogLevel`s based on the `outputStreams` of `TLSLoggingService`
-AND the given log *channel* has not been cached as a known to be an *always off* channel.
+AND the given log *channel* has not been cached as a known to be an *always off* channel (for `TLSLOGMODE=1` that is, see below for different behaviors).
 
 ## TLSCANLOGMODE build setting
 
