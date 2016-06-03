@@ -38,6 +38,24 @@ There is an opportunity to prevent message arguments from being evalutated in th
 
 The logging service marshals the message and its context to a background queue for processing by all available output streams.  Streams can then filter or output the message.
 
+## Installation
+### CocoaPods
+
+[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it using the following command:
+```bash
+$ gem install cocoapods
+```
+
+To integrate TwitterLoggingService into your Xcode project using CocoaPods, specify it in your `Podfile`:
+```ruby
+platform :ios, '8.0'
+use_frameworks!
+
+target "MyApp" do
+    pod 'TwitterLoggingService', '~> 2.2.0'
+end
+```
+
 ## Usage
 
 `TLSLog.h` is the principal header for using *TwitterLoggingService*.  Just include `TLSLog.h` or `@import TwitterLoggingService`.
