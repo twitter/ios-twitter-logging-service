@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'TwitterLoggingService'
-  s.version          = '2.2.0'
+  s.version          = '2.2.1'
   s.summary          = 'Twitter Logging Service is a robust and performant logging framework for iOS clients'
   s.description      = <<-DESC
 Twitter created a framework for logging in order to fulfill the following requirements:
