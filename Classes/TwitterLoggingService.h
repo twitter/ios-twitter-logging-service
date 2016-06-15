@@ -17,7 +17,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+#ifdef __cplusplus
+#import <Foundation/Foundation.h>
+#else
 @import Foundation;
+#endif
 
 #pragma mark Primary Header
 

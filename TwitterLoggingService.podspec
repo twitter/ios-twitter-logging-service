@@ -16,7 +16,7 @@ Twitter created a framework for logging in order to fulfill the following requir
   s.homepage         = 'https://github.com/twitter/ios-twitter-logging-service'
   s.license          = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.author           = { 'Twitter' => 'opensource@twitter.com' }
-  s.source           = { :git => 'https://github.com/twitter/ios-twitter-logging-service.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/RishatShamsutdinov/ios-twitter-logging-service.git' }
   s.ios.deployment_target = '8.0'
   s.public_header_files = 'Classes/**/*.h'
 
