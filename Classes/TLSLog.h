@@ -20,7 +20,11 @@
 #ifndef __TLSLOG_H__
 #define __TLSLOG_H__
 
+#ifdef __cplusplus
+#import <Foundation/Foundation.h>
+#else
 @import Foundation;
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

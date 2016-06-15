@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'TwitterLoggingService'
-  s.version          = '2.2.0'
+  s.version          = '2.2.1'
   s.summary          = 'Twitter Logging Service is a robust and performant logging framework for iOS clients'
   s.description      = <<-DESC
 Twitter created a framework for logging in order to fulfill the following requirements:
@@ -18,6 +18,15 @@ Twitter created a framework for logging in order to fulfill the following requir
   s.author           = { 'Twitter' => 'opensource@twitter.com' }
   s.source           = { :git => 'https://github.com/twitter/ios-twitter-logging-service.git', :tag => s.version.to_s }
   s.ios.deployment_target = '8.0'
-  s.source_files = 'Classes/*'
-  s.public_header_files = 'Classes/*.h'
+  s.public_header_files = 'Classes/**/*.h'
+
+  s.subspec 'Default' do |sp|
+    sp.source_files = 'Classes/**/*'
+  end
+
+  s.subspec 'ObjC' do |sp|
+    sp.source_files = 'Classes/**/*.{h,m,c,cpp,mm}'
+  end
+
+  s.default_subspec = 'Default'
 end
