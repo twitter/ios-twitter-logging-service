@@ -1,18 +1,8 @@
 Pod::Spec.new do |s|
   s.name             = 'TwitterLoggingService'
   s.version          = '2.2.1'
-  s.summary          = 'Twitter Logging Service is a robust and performant logging framework for iOS clients'
-  s.description      = <<-DESC
-Twitter created a framework for logging in order to fulfill the following requirements:
-    - fast (no blocking the main thread)
-    - thread safe
-    - as easy as NSLog in most situations
-    - support pluggable "outputs streams" to which messages will be delivered
-    - "outputs streams" filter messages rather than global filtering for all "output streams"
-    - able to categorize log messages (log channels)
-    - able to designate importance to log messages (log levels)
-    - force opt-in for persisted logs (a security requirement, fulfilled by using the context feature of TLS)
-                       DESC
+  s.summary          = 'Twitter Logging Service is a robust and performant logging framework for iOS and macOS'
+  s.description      = 'Twitter created a framework for logging in order to fulfill the numerous needs of Twitter for iOS including being fast, safe, modular and versatile.'
   s.homepage         = 'https://github.com/twitter/ios-twitter-logging-service'
   s.license          = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
   s.author           = { 'Twitter' => 'opensource@twitter.com' }
