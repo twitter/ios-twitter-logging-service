@@ -2,13 +2,21 @@
 
 ## Info
 
-**Document version:** 2.2.0
+**Document version:** 2.3.0
 
-**Last updated:** 05/19/2016
+**Last updated:** 06/24/2016
 
 **Author:** Nolan O'Brien
 
 ## History
+
+### 2.3.0
+
+- Add `os_log` support (iOS 10+ and macOS 10.12+) with `TLSOSLogOutputStream`
+
+### 2.2.1
+
+- Add cap to log message sizes.  Will also fire a notification that can be observed to identify where the message that was too large was logged from.
 
 ### 2.2.0
 

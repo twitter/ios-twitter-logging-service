@@ -18,10 +18,14 @@
 //  limitations under the License.
 
 #import <pthread.h>
+#import "TLS_Project.h"
 #import "TLSLoggingService+Advanced.h"
 #import "TLSProtocols.h"
 
 @class TLSLoggingService;
+
+NSString * const TLSLogMessageExceededMaximumMessageLengthNotification = @"TLSLogMessageExceededMaximumMessageLengthNotification";
+NSString * const TLSLogMessageExceededMaximumMessageLengthNotificationMessageLengthKey = @"length";
 
 #define TLSCANLOGMODE_ALWAYS        (0)
 #define TLSCANLOGMODE_CHECKCACHED   (1)
@@ -57,6 +61,8 @@ static NSString * const kMainThreadName = @"Main";
 #endif
 }
 
+@property (nonatomic, readwrite) NSUInteger maximumMessageLength;
+
 - (void)tls_private_resetQuickFilterWithOutputStreamCount:(NSUInteger)outputStreamCount;
 - (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject format:(NSString *)format arguments:(va_list)arguments;
 - (void)tls_private_logExecuteWithTimestamp:(CFAbsoluteTime)timestamp level:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contextObject:(id)contextObject threadId:(unsigned int)threadId threadName:(NSString *)threadName message:(NSString *)message;
@@ -83,6 +89,7 @@ static NSString * const kMainThreadName = @"Main";
         _streamsM = [[NSMutableSet alloc] init];
         _loggingQueue = dispatch_queue_create("TLSLoggingService.logging", DISPATCH_QUEUE_SERIAL);
         _transactionQueue = dispatch_queue_create("TLSLoggingService.transaction", DISPATCH_QUEUE_SERIAL);
+        _maximumMessageLength = 0;
 
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
         _quickFilterQueue = dispatch_queue_create("TLSLoggingService.quickFilter", DISPATCH_QUEUE_SERIAL);
@@ -142,10 +149,20 @@ static NSString * const kMainThreadName = @"Main";
 - (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject format:(NSString *)format arguments:(va_list)arguments
 {
     if (channel && format) {
-        mach_port_t threadId = pthread_mach_thread_np(pthread_self());
-        NSString *threadName = TLSCurrentThreadName();
-        CFAbsoluteTime timestamp = CFAbsoluteTimeGetCurrent();
-        NSString *message = [[NSString alloc] initWithFormat:format arguments:arguments];
+        const mach_port_t threadId = pthread_mach_thread_np(pthread_self());
+        NSString * const threadName = TLSCurrentThreadName();
+        const CFAbsoluteTime timestamp = CFAbsoluteTimeGetCurrent();
+        NSString * const message = [[NSString alloc] initWithFormat:format arguments:arguments];
+
+        const NSUInteger maximumMessageLength = self.maximumMessageLength;
+        if (maximumMessageLength > 0) {
+            const NSUInteger length = message.length;
+            if (length > maximumMessageLength) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:TLSLogMessageExceededMaximumMessageLengthNotification object:self userInfo:@{ TLSLogMessageExceededMaximumMessageLengthNotificationMessageLengthKey : @(length) }];
+                return;
+            }
+        }
+
         [self dispatchAsynchronousTransaction:^{
             [self tls_private_logExecuteWithTimestamp:timestamp
                                                 level:level
@@ -192,10 +209,10 @@ static NSString * const kMainThreadName = @"Main";
             if (TLSFilterStatusOK == status) {
                 [permittedStreams addObject:stream];
             }
-            if (exclusiveFiltering.channel && !(TLSFilterStatusCannotLogChannel & status)) {
+            if (exclusiveFiltering.channel && TLS_BITMASK_EXCLUDES_FLAGS(status, TLSFilterStatusCannotLogChannel)) {
                 exclusiveFiltering.channel = 0;
             }
-            if (exclusiveFiltering.level && !(TLSFilterStatusCannotLogLevel & status)) {
+            if (exclusiveFiltering.level && TLS_BITMASK_EXCLUDES_FLAGS(status, TLSFilterStatusCannotLogLevel)) {
                 exclusiveFiltering.level = 0;
             }
             exclusiveFiltering.streamEncountered = 1;
@@ -224,10 +241,10 @@ static NSString * const kMainThreadName = @"Main";
 
 - (TLSFilterStatus)tls_private_filterLogStream:(id<TLSOutputStream>)stream level:(TLSLogLevel)level channel:(NSString *)channel contextObject:(id)contextObject
 {
-    TLSLogLevelMask mask = SANITIZED_LEVEL(TLSLogLevelMaskAll);
+    const TLSLogLevelMask mask = SANITIZED_LEVEL(TLSLogLevelMaskAll);
 
     // Can we log to this level?
-    if (0 == ((1 << level) & mask)) {
+    if (TLS_BITMASK_EXCLUDES_FLAGS(mask, (1 << level))) {
         return TLSFilterStatusCannotLogLevel;
     }
 
@@ -247,9 +264,9 @@ static NSString * const kMainThreadName = @"Main";
     __block BOOL canLog = (nil != channel);
     if (canLog) {
         dispatch_sync(_quickFilterQueue, ^{
-            canLog = (_quickFilterOutputStreamCount > 0) &&
-                     (_quickFilterLevels & (1 << level)) &&
-                     ![_quickFilterOffChannelsM containsObject:channel];
+            canLog =    (_quickFilterOutputStreamCount > 0)
+                     && TLS_BITMASK_HAS_SUBSET_FLAGS(_quickFilterLevels, (1 << level))
+                     && ![_quickFilterOffChannelsM containsObject:channel];
         });
     }
     return canLog;

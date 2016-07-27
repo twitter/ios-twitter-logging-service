@@ -26,9 +26,9 @@ If *Twitter Logging Service* doesn't meet your needs, there are many great loggi
 ## Architecture
 
 There are 3 components to consider:
-1. the log message and its context
-2. the logging service singleton
-3. the output streams
+  1. the log message and its context
+  2. the logging service singleton
+  3. the output streams
 
 The log message is sent to the logging service which provides the message to each output stream.
 
@@ -133,7 +133,11 @@ Setting up your project to use *TwitterLoggingService*:
     // Set up the Twitter Logging Service!
     TLSLoggingService *logger = [TLSLoggingService sharedInstance];
 #if DEBUG
-    [logger addOutputStream:[[TLSNSLogOutputStream alloc] init]];
+    if ([TLSOSLogOutputStream supported]) {
+        [logger addOutputStream:[[TLSOSLogOutputStream alloc] init]];
+    } else {
+        [logger addOutputStream:[[TLSNSLogOutputStream alloc] init]];
+    }
 #endif
     [logger addOutputStream:[[TLSFileOutputStream alloc] initWithLogFileName:@"appname-info.log"]];
 
