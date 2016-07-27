@@ -52,7 +52,7 @@ platform :ios, '8.0'
 use_frameworks!
 
 target "MyApp" do
-    pod 'TwitterLoggingService', '~> 2.2.0'
+    pod 'TwitterLoggingService', '~> 2.3.0'
 end
 ```
 
