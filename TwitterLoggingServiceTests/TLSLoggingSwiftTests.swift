@@ -13,10 +13,14 @@ let TLSLoggingSwiftTestOutputStreamNotification = "TLSLoggingSwiftTestOutputStre
 
 class TLSLoggingSwiftTestOutputStream : NSObject, TLSOutputStream
 {
+    var shouldPrint: Bool = true
+
     func tls_outputLogInfo(logInfo: TLSLogMessageInfo)
     {
         dispatch_async(dispatch_get_main_queue(), {
-            print(logInfo.composeFormattedMessage())
+            if (self.shouldPrint) {
+                print(logInfo.composeFormattedMessage())
+            }
             NSNotificationCenter.defaultCenter().postNotificationName(TLSLoggingSwiftTestOutputStreamNotification, object: logInfo)
         })
     }
@@ -272,5 +276,37 @@ class TLSLoggingSwiftTest: XCTestCase
         XCTAssertFalse(crashlyticsOutputStream.didOutputLogMessageToCrashlytics)
         crashlyticsOutputStream.reset()
         longMessageInfo.reset()
+    }
+
+    func testExtraLargeLogMessage()
+    {
+        var longMessage = "This is a long message that will exceed 16KB so that we can test that it will be discarded."
+        while (longMessage.characters.count < 16 * 1024) {
+            longMessage += longMessage
+        }
+
+        var expectation: XCTestExpectation
+        let service = TLSLoggingService()
+        let outputStream = TLSLoggingSwiftTestOutputStream()
+        outputStream.shouldPrint = false
+        service.addOutputStream(outputStream)
+
+        // will log
+        service.maximumMessageLength = 0
+        expectation = self.expectationForNotification(TLSLoggingSwiftTestOutputStreamNotification, object: nil, handler: nil)
+        TLSLogString(service, TLSLogLevel.Error, "AnyChannel", #file, #function, UInt32(#line), nil, longMessage)
+        self.waitForExpectationsWithTimeout(10, handler: nil)
+
+        // won't log
+        service.maximumMessageLength = 16 * 1024
+        expectation = self.expectationForNotification(TLSLogMessageExceededMaximumMessageLengthNotification, object: nil, handler: nil)
+        TLSLogString(service, TLSLogLevel.Error, "AnyChannel", #file, #function, UInt32(#line), nil, longMessage)
+        self.waitForExpectationsWithTimeout(10, handler: nil)
+
+        // just to avoid the compiler warning :(
+        // can't do `(void)expectation;` like in C/ObjC
+        if expectation.isKindOfClass(XCTestExpectation.self) {
+
+        }
     }
 }

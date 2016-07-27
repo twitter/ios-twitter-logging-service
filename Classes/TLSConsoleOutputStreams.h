@@ -21,7 +21,7 @@
 
 /**
  concrete implementation of a `TLSOutputStream` that writes to `stderr`.
- @note If this stream is used, do not use `TLSNSLogOutputStream`.
+ @note Only use one of `TLSStdErrOutputStream`, `TLSNSLogOutputStream` or `TLSOSLogOutputStream`.
  */
 @interface TLSStdErrOutputStream : NSObject <TLSOutputStream>
 
@@ -36,7 +36,7 @@
 
 /**
  concrete implementation of a `TLSOutputStream` that uses `NSLog`.
- @note If this stream is used, do not use `TLSStdErrOutputStream`.
+ @note Only use one of `TLSStdErrOutputStream`, `TLSNSLogOutputStream` or `TLSOSLogOutputStream`.
  */
 @interface TLSNSLogOutputStream : NSObject <TLSOutputStream>
 
@@ -44,3 +44,26 @@
 - (void)tls_outputLogInfo:(nonnull TLSLogMessageInfo *)logInfo;
 
 @end
+
+/**
+ concrete implementation of a `TLSOutputStream` that uses `os_log`.
+ requires iOS/tvOS 10 and/or macOS 10.12, will have no effect on older OS versions
+ watchOS is unsupported
+ @note Only use one of `TLSStdErrOutputStream`, `TLSNSLogOutputStream` or `TLSOSLogOutputStream`.
+ */
+@interface TLSOSLogOutputStream : NSObject <TLSOutputStream>
+
+/** returns `YES` if this output stream is supported (basically, requires iOS/tvOS 10 or macOS 10.12) */
++ (BOOL)supported;
+
+/** writes the *logInfo* to `os_log` */
+- (void)tls_outputLogInfo:(nonnull TLSLogMessageInfo *)logInfo;
+
+/**
+ subclasses can override to indicate if a *logInfo* is sensitive.
+ Default == `NO`
+ */
+- (BOOL)logInfoIsSensitive:(nonnull TLSLogMessageInfo *)logInfo;
+
+@end
+

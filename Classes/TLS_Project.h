@@ -45,3 +45,10 @@
 
 //! Best effort attempt to get the binary name of the current process
 FOUNDATION_EXTERN NSString *TLSGetProcessBinaryName();
+
+/** Does the `mask` have at least 1 of the bits in `flags` set */
+#define TLS_BITMASK_INTERSECTS_FLAGS(mask, flags)   (((mask) & (flags)) != 0)
+/** Does the `mask` have all of the bits in `flags` set */
+#define TLS_BITMASK_HAS_SUBSET_FLAGS(mask, flags)   (((mask) & (flags)) == (flags))
+/** Does the `mask` have none of the bits in `flags` set */
+#define TLS_BITMASK_EXCLUDES_FLAGS(mask, flags)     (((mask) & (flags)) == 0)

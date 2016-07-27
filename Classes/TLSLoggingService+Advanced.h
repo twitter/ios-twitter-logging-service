@@ -21,17 +21,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXTERN NSString * const TLSLogMessageExceededMaximumMessageLengthNotification;
+FOUNDATION_EXTERN NSString * const TLSLogMessageExceededMaximumMessageLengthNotificationMessageLengthKey;
+
 @interface TLSLoggingService (Advanced)
 
 /**
  The time that the `TLSLoggingService` was initialized for convenience.
  */
 @property (nonatomic, readonly) NSDate *startupTimestamp;
-
 /**
  the set of `id<TLSOutputStream>` objects
  */
 @property (atomic, nonnull, readonly) NSSet<id<TLSOutputStream>> *outputStreams;
+/**
+ the maximum length of a log message.  Anything larger will be discarded and `TLSLogMessageExceededMaximumMessageLengthNotification` will be posted.  `0` means no maximum.
+
+ Default == `0`
+ */
+@property (nonatomic, readwrite) NSUInteger maximumMessageLength;
+
 /**
  Call this when any of the results of a `TLSOutputStream`'s `TLSFiltering` methods change.
  If `TLSCANLOGMODE` is not `1` this is a no-op.
