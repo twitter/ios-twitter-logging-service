@@ -31,13 +31,13 @@ public class TLSLog {
 
      See also: `TLSLogError`, `TLSLogWarning`, `TLSLogInformation` and `TLSLogDebug`
      */
-    public class func log(level: TLSLogLevel, _ channel: String, _ context: AnyObject?, @autoclosure _ message: () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
+    public final class func log(_ level: TLSLogLevel, _ channel: String, _ context: Any?, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
     {
         if (!TLSCanLog(nil, level, channel, context)) {
             return;
         }
 
-        TLSLogString(nil, level, channel, file.stringValue, function.stringValue, UInt32(line), context, message())
+        TLSLogString(nil, level, channel, String(describing: file), String(describing: function), UInt32(line), context, TLSLogMessageOptions(), message())
     }
 
     /**
@@ -45,9 +45,9 @@ public class TLSLog {
 
      TLSLog.error("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public class func error(channel: String, @autoclosure _ message: () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
+    public final class func error(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
     {
-        log(TLSLogLevel.Error, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(TLSLogLevel.error, channel, nil /*context*/, message, file: file, function: function, line: line)
     }
 
     /**
@@ -55,9 +55,9 @@ public class TLSLog {
 
      TLSLog.warning("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public class func warning(channel: String, @autoclosure _ message: () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
+    public final class func warning(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
     {
-        log(TLSLogLevel.Warning, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(TLSLogLevel.warning, channel, nil /*context*/, message, file: file, function: function, line: line)
     }
 
     /**
@@ -65,9 +65,9 @@ public class TLSLog {
 
      TLSLog.information("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public class func information(channel: String, @autoclosure _ message: () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
+    public final class func information(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
     {
-        log(TLSLogLevel.Information, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(TLSLogLevel.information, channel, nil /*context*/, message, file: file, function: function, line: line)
     }
 
     /**
@@ -77,8 +77,8 @@ public class TLSLog {
 
      *Note*: Only logs on `DEBUG` builds
      */
-    public class func debug(channel: String, @autoclosure _ message: () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
+    public final class func debug(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: UInt = #line)
     {
-        log(TLSLogLevel.Debug, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(TLSLogLevel.debug, channel, nil /*context*/, message, file: file, function: function, line: line)
     }
 }

@@ -18,6 +18,7 @@
 //  limitations under the License.
 
 #import "TLSCrashlyticsOutputStream.h"
+#import "TLSLog.h"
 
 static const NSUInteger kMaxLogMessageLength = 16 * 1024;
 
