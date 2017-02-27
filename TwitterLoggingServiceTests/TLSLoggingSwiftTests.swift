@@ -9,19 +9,22 @@
 import TwitterLoggingService
 import XCTest
 
-let TLSLoggingSwiftTestOutputStreamNotification = "TLSLoggingSwiftTestOutputStreamNotification"
+extension Notification.Name {
+    fileprivate static let LoggingSwiftTestOutputStreamNotification = Notification.Name(rawValue: "TLSLoggingSwiftTestOutputStreamNotification")
+    fileprivate static let LoggingSwiftTestDiscardedMessageNotification = Notification.Name(rawValue: "TLSLoggingSwiftTestDiscardedMessageNotification")
+}
 
 class TLSLoggingSwiftTestOutputStream : NSObject, TLSOutputStream
 {
     var shouldPrint: Bool = true
 
-    func tls_outputLogInfo(logInfo: TLSLogMessageInfo)
+    func tls_outputLogInfo(_ logInfo: TLSLogMessageInfo)
     {
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             if (self.shouldPrint) {
                 print(logInfo.composeFormattedMessage())
             }
-            NSNotificationCenter.defaultCenter().postNotificationName(TLSLoggingSwiftTestOutputStreamNotification, object: logInfo)
+            NotificationCenter.default.post(name: .LoggingSwiftTestOutputStreamNotification, object: logInfo)
         })
     }
 }
@@ -64,21 +67,21 @@ class TLSLoggingSwiftTestMessageInfo : TLSLogMessageInfo
         }
     }
     var didGetContextObject: Bool = false
-    override var contextObject: AnyObject? {
+    override var contextObject: Any? {
         get {
             didGetContextObject = true
             return super.contextObject
         }
     }
     var didGetTimestamp: Bool = false
-    override var timestamp: NSDate {
+    override var timestamp: Date {
         get {
             didGetTimestamp = true
             return super.timestamp
         }
     }
     var didGetLogLifespan: Bool = false
-    override var logLifespan: NSTimeInterval {
+    override var logLifespan: TimeInterval {
         get {
             didGetLogLifespan = true
             return super.logLifespan
@@ -133,12 +136,12 @@ class TLSLoggingSwiftTestMessageInfo : TLSLogMessageInfo
 class TLSLoggingSwiftTestCrashlyticsOutputStream : TLSCrashlyticsOutputStream
 {
     var didOutputLogMessageToCrashlytics: Bool = false
-    override func outputLogMessageToCrashlytics(message: String)
+    override func outputLogMessage(toCrashlytics message: String)
     {
         didOutputLogMessageToCrashlytics = true
     }
 
-    private var _discardLargeLogMessagesOverride:Bool = false
+    fileprivate var _discardLargeLogMessagesOverride:Bool = false
     var discardLargeLogMessagesOverride: Bool
     {
         get {
@@ -160,6 +163,17 @@ class TLSLoggingSwiftTestCrashlyticsOutputStream : TLSCrashlyticsOutputStream
     }
 }
 
+class TLSLoggingSwiftTestServiceDelegate : NSObject, TLSLoggingServiceDelegate
+{
+    func tls_loggingService(_ service: TLSLoggingService, lengthToLogForMessageExceedingMaxSafeLength maxSafeLength: UInt, level: TLSLogLevel, channel: String, file: String, function: String, line: UInt32, contextObject: Any?, message: String) -> UInt {
+
+        DispatchQueue.main.async(execute: {
+            NotificationCenter.default.post(name: .LoggingSwiftTestDiscardedMessageNotification, object: nil)
+        });
+        return 0;
+    }
+}
+
 class TLSLoggingSwiftTest: XCTestCase
 {
     let testOutputStream = TLSLoggingSwiftTestOutputStream()
@@ -174,36 +188,36 @@ class TLSLoggingSwiftTest: XCTestCase
         super.tearDown()
     }
 
-    func expectationForLoggingLevel(level: TLSLogLevel) -> XCTestExpectation {
-        return self.expectationForNotification(TLSLoggingSwiftTestOutputStreamNotification, object: nil, handler: { (note: NSNotification) in
+    func expectationForLoggingLevel(_ level: TLSLogLevel) -> XCTestExpectation {
+        return self.expectation(forNotification: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue, object: nil, handler: { (note: Notification) in
             let messageInfo: TLSLogMessageInfo = note.object as! TLSLogMessageInfo
             return messageInfo.level == level
         })
     }
 
-    func dummyLogMessageInfo(message: String = "Some Message") -> TLSLoggingSwiftTestMessageInfo
+    func dummyLogMessageInfo(_ message: String = "Some Message") -> TLSLoggingSwiftTestMessageInfo
     {
-        return TLSLoggingSwiftTestMessageInfo(level: TLSLogLevel.Error, file:#file, function:#function ,line:#line, channel: "SomeChannel", timestamp: NSDate(), logLifespan: 0.1, threadId: 1, threadName: TLSCurrentThreadName(), contextObject: nil, message: message)
+        return TLSLoggingSwiftTestMessageInfo(level: TLSLogLevel.error, file:#file, function:#function ,line:#line, channel: "SomeChannel", timestamp: Date(), logLifespan: 0.1, threadId: 1, threadName: TLSCurrentThreadName(), contextObject: nil, message: message)
     }
 
     func testSwiftLogging() {
-        let context = NSDate()
+        let context = Date()
 
-        var expectation = self.expectationForLoggingLevel(TLSLogLevel.Error)
+        var expectation = self.expectationForLoggingLevel(TLSLogLevel.error)
         TLSLog.error("TestChannel", "Message with context: \(context)")
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        self.waitForExpectations(timeout: 10, handler: nil)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.Warning)
+        expectation = self.expectationForLoggingLevel(TLSLogLevel.warning)
         TLSLog.warning("TestChannel", "Message with context: \(context)")
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        self.waitForExpectations(timeout: 10, handler: nil)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.Information)
+        expectation = self.expectationForLoggingLevel(TLSLogLevel.information)
         TLSLog.information("TestChannel", "Message with context: \(context)")
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        self.waitForExpectations(timeout: 10, handler: nil)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.Alert)
-        TLSLog.log(TLSLogLevel.Alert, "TestChanne", context, "Message with context: \(context)")
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        expectation = self.expectationForLoggingLevel(TLSLogLevel.alert)
+        TLSLog.log(TLSLogLevel.alert, "TestChannel", context, "Message with context: \(context)")
+        self.waitForExpectations(timeout: 10, handler: nil)
 
 #if DEBUG
         expectation = self.expectationForLoggingLevel(TLSLogLevel.Debug)
@@ -287,25 +301,28 @@ class TLSLoggingSwiftTest: XCTestCase
 
         var expectation: XCTestExpectation
         let service = TLSLoggingService()
+        let delegate = TLSLoggingSwiftTestServiceDelegate()
         let outputStream = TLSLoggingSwiftTestOutputStream()
+
+        service.delegate = delegate
         outputStream.shouldPrint = false
         service.addOutputStream(outputStream)
 
         // will log
-        service.maximumMessageLength = 0
-        expectation = self.expectationForNotification(TLSLoggingSwiftTestOutputStreamNotification, object: nil, handler: nil)
-        TLSLogString(service, TLSLogLevel.Error, "AnyChannel", #file, #function, UInt32(#line), nil, longMessage)
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        service.maximumSafeMessageLength = 0
+        expectation = self.expectation(forNotification: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue, object: nil, handler: nil)
+        TLSLogString(service, TLSLogLevel.error, "AnyChannel", #file, #function, UInt32(#line), nil, TLSLogMessageOptions(), longMessage)
+        self.waitForExpectations(timeout: 10, handler: nil)
 
         // won't log
-        service.maximumMessageLength = 16 * 1024
-        expectation = self.expectationForNotification(TLSLogMessageExceededMaximumMessageLengthNotification, object: nil, handler: nil)
-        TLSLogString(service, TLSLogLevel.Error, "AnyChannel", #file, #function, UInt32(#line), nil, longMessage)
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        service.maximumSafeMessageLength = 16 * 1024
+        expectation = self.expectation(forNotification: Notification.Name.LoggingSwiftTestDiscardedMessageNotification.rawValue, object: nil, handler: nil)
+        TLSLogString(service, TLSLogLevel.error, "AnyChannel", #file, #function, UInt32(#line), nil, TLSLogMessageOptions(), longMessage)
+        self.waitForExpectations(timeout: 10, handler: nil)
 
         // just to avoid the compiler warning :(
         // can't do `(void)expectation;` like in C/ObjC
-        if expectation.isKindOfClass(XCTestExpectation.self) {
+        if expectation.isKind(of: XCTestExpectation.self) {
 
         }
     }

@@ -17,13 +17,107 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import "TLSLog.h"
+#import <Foundation/Foundation.h>
+
+#pragma mark - Constants
 
 /** Domain for errors stemming from TwitterLoggingService APIs */
 FOUNDATION_EXTERN NSString * __nonnull const TLSErrorDomain;
 
 /** Pull out an name for the current thread or `nil` if no name was identified */
 FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName();
+
+/**
+ These are syslog compatible log levels for use with *TwitterLoggingService*.
+ `TLSLog.h` only exposes easy macros for Error, Warning, Information and Debug.
+
+ # Number of levels
+
+ static const NSUInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
+
+ ## Levels to strings
+
+ FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level) __attribute__((const));
+
+ */
+typedef NS_ENUM(NSUInteger, TLSLogLevel)
+{
+    /** Present for syslog compatability */
+    TLSLogLevelEmergency = 0,
+    /** Present for syslog compatability */
+    TLSLogLevelAlert,
+    /** Present for syslog compatability */
+    TLSLogLevelCritical,
+    /** Use `TLSLogError` (See TLSLog) */
+    TLSLogLevelError,
+    /** Use `TLSLogWarning` (See TLSLog) */
+    TLSLogLevelWarning,
+    /** Present for syslog compatability */
+    TLSLogLevelNotice,
+    /** Use `TLSLogInformation` (See TLSLog) */
+    TLSLogLevelInformation,
+    /** Use `TLSLogDebug` (See TLSLog) */
+    TLSLogLevelDebug
+};
+
+//! Number of log levels
+static const NSUInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
+
+/**
+ A set of flags that can be used to identify specific log levels in one mask.
+ Used by `TLSOutputStream` conforming objects for filtering log levels.
+ */
+typedef NS_OPTIONS(NSInteger, TLSLogLevelMask)
+{
+    /** Emergency */
+    TLSLogLevelMaskEmergency   = (1 << TLSLogLevelEmergency),
+    /** Alert */
+    TLSLogLevelMaskAlert       = (1 << TLSLogLevelAlert),
+    /** Critical */
+    TLSLogLevelMaskCritical    = (1 << TLSLogLevelCritical),
+    /** Error */
+    TLSLogLevelMaskError       = (1 << TLSLogLevelError),
+    /** Warning */
+    TLSLogLevelMaskWarning     = (1 << TLSLogLevelWarning),
+    /** Notice */
+    TLSLogLevelMaskNotice      = (1 << TLSLogLevelNotice),
+    /** Information */
+    TLSLogLevelMaskInformation = (1 << TLSLogLevelInformation),
+    /** Debug */
+    TLSLogLevelMaskDebug       = (1 << TLSLogLevelDebug),
+
+    /** All Levels */
+    TLSLogLevelMaskAll         = 0xFF,
+    /** No Levels */
+    TLSLogLevelMaskNone        = 0,
+
+    /** Emergency and above */
+    TLSLogLevelMaskEmergencyAndAbove   = TLSLogLevelMaskEmergency,
+    /** Alert and above */
+    TLSLogLevelMaskAlertAndAbove       = TLSLogLevelMaskEmergencyAndAbove   | TLSLogLevelMaskAlert,
+    /** Critical and above */
+    TLSLogLevelMaskCriticalAndAbove    = TLSLogLevelMaskAlertAndAbove       | TLSLogLevelMaskCritical,
+    /** Error and above */
+    TLSLogLevelMaskErrorAndAbove       = TLSLogLevelMaskCriticalAndAbove    | TLSLogLevelMaskError,
+    /** Warning and above */
+    TLSLogLevelMaskWarningAndAbove     = TLSLogLevelMaskErrorAndAbove       | TLSLogLevelMaskWarning,
+    /** Notice and above */
+    TLSLogLevelMaskNoticeAndAbove      = TLSLogLevelMaskWarningAndAbove     | TLSLogLevelMaskNotice,
+    /** Information and above */
+    TLSLogLevelMaskInformationAndAbove = TLSLogLevelMaskNoticeAndAbove      | TLSLogLevelMaskInformation,
+    /** Debug and above (effectively everything except out of bounds values) */
+    TLSLogLevelMaskDebugAndAbove       = TLSLogLevelMaskInformationAndAbove | TLSLogLevelMaskDebug
+};
+
+/** Advanced options for logging a message */
+typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
+    /** no options (default behavior) */
+    TLSLogMessageNoOptions = 0,
+    /** ignore the `[TLSLoggingService maximumSafeMessageLength]` capping of the message */
+    TLSLogMessageIgnoringMaximumSafeMessageLength = 1 << 0,
+};
+
+#pragma mark - Declarations
 
 /**
  Encapsulation of log message information.
@@ -77,56 +171,10 @@ FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName();
 /**
  `NS_UNAVAILABLE`
  */
-- (nullable instancetype)init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 /**
  `NS_UNAVAILABLE`
  */
-+ (nullable instancetype)new NS_UNAVAILABLE;
++ (nonnull instancetype)new NS_UNAVAILABLE;
 
 @end
-
-/**
- A set of flags that can be used to identify specific log levels in one mask.
- Used by `TLSOutputStream` conforming objects for filtering log levels.
- */
-typedef NS_OPTIONS(NSInteger, TLSLogLevelMask)
-{
-    /** Emergency */
-    TLSLogLevelMaskEmergency   = (1 << TLSLogLevelEmergency),
-    /** Alert */
-    TLSLogLevelMaskAlert       = (1 << TLSLogLevelAlert),
-    /** Critical */
-    TLSLogLevelMaskCritical    = (1 << TLSLogLevelCritical),
-    /** Error */
-    TLSLogLevelMaskError       = (1 << TLSLogLevelError),
-    /** Warning */
-    TLSLogLevelMaskWarning     = (1 << TLSLogLevelWarning),
-    /** Notice */
-    TLSLogLevelMaskNotice      = (1 << TLSLogLevelNotice),
-    /** Information */
-    TLSLogLevelMaskInformation = (1 << TLSLogLevelInformation),
-    /** Debug */
-    TLSLogLevelMaskDebug       = (1 << TLSLogLevelDebug),
-
-    /** All Levels */
-    TLSLogLevelMaskAll         = 0xFF,
-    /** No Levels */
-    TLSLogLevelMaskNone        = 0,
-
-    /** Emergency and above */
-    TLSLogLevelMaskEmergencyAndAbove   = TLSLogLevelMaskEmergency,
-    /** Alert and above */
-    TLSLogLevelMaskAlertAndAbove       = TLSLogLevelMaskEmergencyAndAbove   | TLSLogLevelMaskAlert,
-    /** Critical and above */
-    TLSLogLevelMaskCriticalAndAbove    = TLSLogLevelMaskAlertAndAbove       | TLSLogLevelMaskCritical,
-    /** Error and above */
-    TLSLogLevelMaskErrorAndAbove       = TLSLogLevelMaskCriticalAndAbove    | TLSLogLevelMaskError,
-    /** Warning and above */
-    TLSLogLevelMaskWarningAndAbove     = TLSLogLevelMaskErrorAndAbove       | TLSLogLevelMaskWarning,
-    /** Notice and above */
-    TLSLogLevelMaskNoticeAndAbove      = TLSLogLevelMaskWarningAndAbove     | TLSLogLevelMaskNotice,
-    /** Information and above */
-    TLSLogLevelMaskInformationAndAbove = TLSLogLevelMaskNoticeAndAbove      | TLSLogLevelMaskInformation,
-    /** Debug and above (effectively everything except out of bounds values) */
-    TLSLogLevelMaskDebugAndAbove       = TLSLogLevelMaskInformationAndAbove | TLSLogLevelMaskDebug
-};

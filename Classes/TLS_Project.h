@@ -19,11 +19,7 @@
 
 /* This header is private to Twitter Logging Service */
 
-#ifdef __cplusplus
 #import <Foundation/Foundation.h>
-#else
-@import Foundation;
-#endif
 
 /*
  Static Asserts (asserts that trigger at compile time)
