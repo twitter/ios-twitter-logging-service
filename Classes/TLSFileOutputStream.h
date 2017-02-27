@@ -23,6 +23,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  This is the base class for other file output stream classes to extend.
+
+ ### Buffered I/O with File Output Streams
+
+ Something important to consider is I/O buffering.
+ The file output stream will output to a file descriptor but for system performance an I/O write
+ doesn't happen synchronously, it gets buffered until one of the following is encountered:
+
+   1. enough output is buffered
+   2. the file descriptor is closed
+   3. the file descriptor is explicitly flushed
+
+ For debugging, you can use the exposed property on the file output stream to explicitly flush on
+ every write, but it is recommended to only do so when trying to debug something specific and never
+ be enabled in production builds.   See `flushAfterEveryWriteEnabled`
+
+ To offer increased control over output streams buffering, `TLSLoggingService` exposes a `flush`
+ method.  It is recommended that you `flush` whenever you encounter an explicit need to have the
+ buffered I/O be output to disk, such as:
+
+   1. When the app backgrounds
+   2. When the app is terminated
+   3. When a crash is detected (call it JIT flushing)
+   4. When the logs need to be read (like when you zip them up for a bug report)
+
  */
 @interface TLSFileOutputStream : NSObject <TLSOutputStream>
 {
@@ -85,16 +109,21 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  NS_UNAVAILABLE: callers are not allowed to instantiate this class without a logFile name or path
  */
-- (nullable instancetype)init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 /**
  NS_UNAVAILABLE: callers are not allowed to instantiate this class without a logFile name or path
  */
-+ (nullable instancetype)new NS_UNAVAILABLE;
++ (nonnull instancetype)new NS_UNAVAILABLE;
 
 /**
  @return the User's Caches directory under a directory named "logs"
  */
 + (NSString *)defaultLogFileDirectoryPath;
+
+/**
+ Reset the log and clear it
+ */
+- (BOOL)resetAndReturnError:(out NSError * __nullable * __nullable)error;
 
 #pragma mark TLSOutputStream
 

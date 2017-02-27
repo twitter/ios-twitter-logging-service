@@ -67,8 +67,9 @@
  @param function the `@__FUNCTION__`
  @param line the `__LINE__`
  @param contextObject any additional context to be used when logging (advanced, should often just be `nil`).
+ @param options `TLSLogMessageOptions` to log with (default is `0`)
  @param message the `NSString` formatted message.
  */
-- (void)logWithLevel:(TLSLogLevel)level channel:(nonnull NSString *)channel file:(nonnull NSString *)file function:(nonnull NSString *)function line:(unsigned int)line contextObject:(nullable id)contextObject message:(nonnull NSString *)message, ... NS_FORMAT_FUNCTION(7,8);
+- (void)logWithLevel:(TLSLogLevel)level channel:(nonnull NSString *)channel file:(nonnull NSString *)file function:(nonnull NSString *)function line:(unsigned int)line contextObject:(nullable id)contextObject options:(TLSLogMessageOptions)options message:(nonnull NSString *)message, ... NS_FORMAT_FUNCTION(8,9);
 
 @end

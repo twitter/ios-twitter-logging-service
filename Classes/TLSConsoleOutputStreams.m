@@ -18,6 +18,7 @@
 //  limitations under the License.
 
 #import "TLSConsoleOutputStreams.h"
+#import "TLSLog.h"
 
 #if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
 #define OS_LOG_AVAILABLE 1

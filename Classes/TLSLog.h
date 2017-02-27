@@ -20,58 +20,19 @@
 #ifndef __TLSLOG_H__
 #define __TLSLOG_H__
 
-#ifdef __cplusplus
 #import <Foundation/Foundation.h>
-#else
-@import Foundation;
-#endif
+#import "TLSDeclarations.h"
+
+@class TLSLoggingService;
 
 NS_ASSUME_NONNULL_BEGIN
-
-#pragma mark Declarations
-
-/**
- These are syslog compatible log levels for use with *TwitterLoggingService*.
- `TLSLog.h` only exposes easy macros for Error, Warning, Information and Debug.
-
- # Number of levels
-
- static const NSUInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
-
- ## Levels to strings
-
- FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level) __attribute__((const));
-
- */
-typedef NS_ENUM(NSUInteger, TLSLogLevel)
-{
-    /** Present for syslog compatability */
-    TLSLogLevelEmergency = 0,
-    /** Present for syslog compatability */
-    TLSLogLevelAlert,
-    /** Present for syslog compatability */
-    TLSLogLevelCritical,
-    /** Use `TLSLogError` (See TLSLog) */
-    TLSLogLevelError,
-    /** Use `TLSLogWarning` (See TLSLog) */
-    TLSLogLevelWarning,
-    /** Present for syslog compatability */
-    TLSLogLevelNotice,
-    /** Use `TLSLogInformation` (See TLSLog) */
-    TLSLogLevelInformation,
-    /** Use `TLSLogDebug` (See TLSLog) */
-    TLSLogLevelDebug
-};
-
-//! Number of log levels
-static const NSUInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
 
 #pragma mark Essential Macros
 
 //! Root Macro.  Provide the _level_, _channel_ and format string.
 #define TLSLog(level, channel, ...) \
     if (TLSCanLog(nil, level, channel, nil)) { \
-        TLSLogEx(nil, level, channel, @(__FILE__), @(__PRETTY_FUNCTION__), __LINE__, nil, __VA_ARGS__); \
+        TLSLogEx(nil, level, channel, @(__FILE__), @(__PRETTY_FUNCTION__), __LINE__, nil, TLSLogMessageNoOptions, __VA_ARGS__); \
     }
 
 //! Log to Error level
@@ -96,8 +57,6 @@ FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault() __attribute__((con
 
 #pragma mark TLSLog Helper Functions
 
-@class TLSLoggingService;
-
 //! Log a message using formatted message
 FOUNDATION_EXTERN void TLSLogEx(TLSLoggingService * __nullable service,
                                 TLSLogLevel level,
@@ -106,7 +65,8 @@ FOUNDATION_EXTERN void TLSLogEx(TLSLoggingService * __nullable service,
                                 NSString *function,
                                 unsigned int line,
                                 id __nullable contextObject,
-                                NSString *format, ...) NS_FORMAT_FUNCTION(8,9);
+                                TLSLogMessageOptions options,
+                                NSString *format, ...) NS_FORMAT_FUNCTION(9,10);
 
 //! Log a message using a fully constructed string
 FOUNDATION_EXTERN void TLSLogString(TLSLoggingService * __nullable service,
@@ -116,6 +76,7 @@ FOUNDATION_EXTERN void TLSLogString(TLSLoggingService * __nullable service,
                                     NSString *function,
                                     unsigned int line,
                                     id __nullable contextObject,
+                                    TLSLogMessageOptions options,
                                     NSString *message);
 
 //! Log a message using a variable arguments list
@@ -126,6 +87,7 @@ FOUNDATION_EXTERN void TLSvaLog(TLSLoggingService * __nullable service,
                                 NSString *function,
                                 unsigned int line,
                                 id __nullable contextObject,
+                                TLSLogMessageOptions options,
                                 NSString *format,
                                 va_list arguments);
 

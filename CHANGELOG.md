@@ -2,13 +2,23 @@
 
 ## Info
 
-**Document version:** 2.3.0
+**Document version:** 2.5.0
 
-**Last updated:** 06/24/2016
+**Last updated:** 09/13/2016
 
 **Author:** Nolan O'Brien
 
 ## History
+
+### 2.5.0
+
+- Add options to _TLS_ with `TLSLogMessageOptions`
+  - Provides support to explicitely ignore the maximum message length cap
+  - Change `maximumSafeMessageLength` to truncate by default instead of discard when message length is too long and there is not delegate
+
+### 2.4.0
+
+- Create `TLSLoggingServiceDelegate` protocol.  Currently delegates the decision of what to do when a log message with an unsafe length is encountered.
 
 ### 2.3.0
 

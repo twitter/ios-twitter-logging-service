@@ -24,9 +24,6 @@
 
 @class TLSLoggingService;
 
-NSString * const TLSLogMessageExceededMaximumMessageLengthNotification = @"TLSLogMessageExceededMaximumMessageLengthNotification";
-NSString * const TLSLogMessageExceededMaximumMessageLengthNotificationMessageLengthKey = @"length";
-
 #define TLSCANLOGMODE_ALWAYS        (0)
 #define TLSCANLOGMODE_CHECKCACHED   (1)
 #define TLSCANLOGMODE_CHECKFULL     (2)
@@ -61,10 +58,11 @@ static NSString * const kMainThreadName = @"Main";
 #endif
 }
 
-@property (nonatomic, readwrite) NSUInteger maximumMessageLength;
+@property (nonatomic, readwrite) NSUInteger maximumSafeMessageLength;
+@property (atomic, readwrite, nullable, weak) id<TLSLoggingServiceDelegate> delegate;
 
 - (void)tls_private_resetQuickFilterWithOutputStreamCount:(NSUInteger)outputStreamCount;
-- (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject format:(NSString *)format arguments:(va_list)arguments;
+- (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject options:(TLSLogMessageOptions)options format:(NSString *)format arguments:(va_list)arguments;
 - (void)tls_private_logExecuteWithTimestamp:(CFAbsoluteTime)timestamp level:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contextObject:(id)contextObject threadId:(unsigned int)threadId threadName:(NSString *)threadName message:(NSString *)message;
 - (TLSFilterStatus)tls_private_filterLogStream:(id<TLSOutputStream>)stream level:(TLSLogLevel)level channel:(NSString *)channel contextObject:(id)contextObject;
 - (BOOL)tls_private_canLogWithLevel:(TLSLogLevel)level channel:(NSString *)channel contextObject:(id)contextObjec;
@@ -89,7 +87,7 @@ static NSString * const kMainThreadName = @"Main";
         _streamsM = [[NSMutableSet alloc] init];
         _loggingQueue = dispatch_queue_create("TLSLoggingService.logging", DISPATCH_QUEUE_SERIAL);
         _transactionQueue = dispatch_queue_create("TLSLoggingService.transaction", DISPATCH_QUEUE_SERIAL);
-        _maximumMessageLength = 0;
+        _maximumSafeMessageLength = 0;
 
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
         _quickFilterQueue = dispatch_queue_create("TLSLoggingService.quickFilter", DISPATCH_QUEUE_SERIAL);
@@ -118,7 +116,7 @@ static NSString * const kMainThreadName = @"Main";
     }];
 }
 
-- (void)logWithLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contextObject:(id)contextObject message:(NSString *)message, ...
+- (void)logWithLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contextObject:(id)contextObject options:(TLSLogMessageOptions)options message:(NSString *)message, ...
 {
     va_list arguments;
     va_start(arguments, message);
@@ -128,6 +126,7 @@ static NSString * const kMainThreadName = @"Main";
                                 function:function
                                     line:line
                             contexObject:contextObject
+                                 options:options
                                   format:message
                                arguments:arguments];
     va_end(arguments);
@@ -146,20 +145,40 @@ static NSString * const kMainThreadName = @"Main";
 #endif
 }
 
-- (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject format:(NSString *)format arguments:(va_list)arguments
+- (void)tls_private_logDispatchToLevel:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contexObject:(id)contextObject options:(TLSLogMessageOptions)options format:(NSString *)format arguments:(va_list)arguments
 {
     if (channel && format) {
         const mach_port_t threadId = pthread_mach_thread_np(pthread_self());
         NSString * const threadName = TLSCurrentThreadName();
         const CFAbsoluteTime timestamp = CFAbsoluteTimeGetCurrent();
-        NSString * const message = [[NSString alloc] initWithFormat:format arguments:arguments];
+        NSString * message = [[NSString alloc] initWithFormat:format arguments:arguments];
 
-        const NSUInteger maximumMessageLength = self.maximumMessageLength;
-        if (maximumMessageLength > 0) {
-            const NSUInteger length = message.length;
-            if (length > maximumMessageLength) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:TLSLogMessageExceededMaximumMessageLengthNotification object:self userInfo:@{ TLSLogMessageExceededMaximumMessageLengthNotificationMessageLengthKey : @(length) }];
-                return;
+        if (TLS_BITMASK_EXCLUDES_FLAGS(options, TLSLogMessageIgnoringMaximumSafeMessageLength)) {
+            const NSUInteger maximumMessageLength = self.maximumSafeMessageLength;
+            if (maximumMessageLength > 0) {
+                const NSUInteger length = message.length;
+                if (length > maximumMessageLength) {
+                    NSUInteger lengthToLog = maximumMessageLength;
+
+                    const id<TLSLoggingServiceDelegate> delegate = self.delegate;
+                    if ([delegate respondsToSelector:@selector(tls_loggingService:lengthToLogForMessageExceedingMaxSafeLength:level:channel:file:function:line:contextObject:message:)]) {
+                        lengthToLog = [delegate tls_loggingService:self
+                       lengthToLogForMessageExceedingMaxSafeLength:maximumMessageLength
+                                                             level:level
+                                                           channel:channel
+                                                              file:file
+                                                          function:function
+                                                              line:line
+                                                     contextObject:contextObject
+                                                           message:message];
+                    }
+
+                    if (!lengthToLog) {
+                        return;
+                    } else if (lengthToLog < length) {
+                        message = [message substringToIndex:lengthToLog];
+                    }
+                }
             }
         }
 
@@ -438,7 +457,7 @@ static NSString * const kMainThreadName = @"Main";
 
 @end
 
-void TLSvaLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString *function, unsigned int line, id contextObject, NSString *format, va_list arguments)
+void TLSvaLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString *function, unsigned int line, id contextObject, TLSLogMessageOptions options, NSString *format, va_list arguments)
 {
     [(service ?: sLoggingService) tls_private_logDispatchToLevel:level
                                                          channel:channel
@@ -446,21 +465,22 @@ void TLSvaLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel, 
                                                         function:function
                                                             line:line
                                                     contexObject:contextObject
+                                                         options:options
                                                           format:format
                                                        arguments:arguments];
 }
 
-void TLSLogEx(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString *function, unsigned int line, id contextObject, NSString *format, ...)
+void TLSLogEx(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString *function, unsigned int line, id contextObject, TLSLogMessageOptions options, NSString *format, ...)
 {
     va_list arguments;
     va_start(arguments, format);
-    TLSvaLog(service, level, channel, file, function, line, contextObject, format, arguments);
+    TLSvaLog(service, level, channel, file, function, line, contextObject, options, format, arguments);
     va_end(arguments);
 }
 
-void TLSLogString(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString * function, unsigned int line, id contextObject, NSString *message)
+void TLSLogString(TLSLoggingService *service, TLSLogLevel level, NSString *channel, NSString *file, NSString * function, unsigned int line, id contextObject, TLSLogMessageOptions options, NSString *message)
 {
-    TLSLogEx(service, level, channel, file, function, line, contextObject, @"%@", message);
+    TLSLogEx(service, level, channel, file, function, line, contextObject, options, @"%@", message);
 }
 
 BOOL TLSCanLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel, id contextObject)

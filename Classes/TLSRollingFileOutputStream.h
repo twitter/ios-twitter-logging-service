@@ -105,9 +105,9 @@ typedef NS_ENUM(TLSFileOutputEvent, TLSRollingFileOutputEvent) {
 - (nullable instancetype)initWithLogFileName:(nullable NSString*)logFileName error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_UNAVAILABLE;
 
 /** Unavailable because super init is NS_UNAVAILABLE */
-- (nullable instancetype)init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 /** Unavailable because super init is NS_UNAVAILABLE */
-+ (nullable instancetype)new NS_UNAVAILABLE;
++ (nonnull instancetype)new NS_UNAVAILABLE;
 
 #pragma mark - protocol TLSDataRetrieval
 /**

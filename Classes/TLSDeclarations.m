@@ -21,6 +21,7 @@
 
 #import "TLS_Project.h"
 #import "TLSDeclarations.h"
+#import "TLSLog.h"
 
 NSString * const TLSErrorDomain = @"TLSErrorDomain";
 

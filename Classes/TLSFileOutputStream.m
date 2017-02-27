@@ -109,6 +109,17 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
     return NSUTF8StringEncoding;
 }
 
+- (BOOL)resetAndReturnError:(out NSError * __nullable * __nullable)error
+{
+    if (_logFile) {
+        fclose(_logFile);
+        _logFile = NULL;
+        [[NSFileManager defaultManager] removeItemAtPath:_logFilePath error:NULL];
+    }
+
+    return [self openLogFilePath:_logFilePath error:error];
+}
+
 #pragma mark - TLSOutputStream protocol implementation
 
 - (void)tls_flush

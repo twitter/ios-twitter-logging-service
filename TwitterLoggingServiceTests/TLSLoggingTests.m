@@ -797,22 +797,22 @@ static NSMutableDictionary *sRuntimes;
     TestLoggingBlock block = ^(NSString *theChannel) {
         if (TLSCanLog(nil, TLSLogLevelDebug, theChannel, NULL)) {
             dispatchedLogMessages++;
-            [sLoggingService logWithLevel:TLSLogLevelDebug channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
+            [sLoggingService logWithLevel:TLSLogLevelDebug channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL options:0 message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
             [sLoggingService flush];
         }
         if (TLSCanLog(nil, TLSLogLevelInformation, theChannel, NULL)) {
             dispatchedLogMessages++;
-            [sLoggingService logWithLevel:TLSLogLevelInformation channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
+            [sLoggingService logWithLevel:TLSLogLevelInformation channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL options:0 message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
             [sLoggingService flush];
         }
         if (TLSCanLog(nil, TLSLogLevelWarning, theChannel, NULL)) {
             dispatchedLogMessages++;
-            [sLoggingService logWithLevel:TLSLogLevelWarning channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
+            [sLoggingService logWithLevel:TLSLogLevelWarning channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL options:0 message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
             [sLoggingService flush];
         }
         if (TLSCanLog(nil, TLSLogLevelError, theChannel, NULL)) {
             dispatchedLogMessages++;
-            [sLoggingService logWithLevel:TLSLogLevelError channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
+            [sLoggingService logWithLevel:TLSLogLevelError channel:theChannel file:@(__FILE__) function:@(__PRETTY_FUNCTION__) line:__LINE__ contextObject:NULL options:0 message:@"%d %@ %f %@ %@", 1, @2, 3.0f, GenerateLoggingArgument(), nil];
             [sLoggingService flush];
         }
     };
