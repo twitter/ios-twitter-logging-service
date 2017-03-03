@@ -164,7 +164,7 @@ Setting up your project to use *TwitterLoggingService*:
 
 As a best practice follow these simple guidelines:
 
-1) Any user sensitive information should not be logged to output streams that persist messages (including being sent over the network to be saved). You can configure you output stream to filter out logs to these sensitive channels.  Or do the inverse, and only permit certain "safe" channels to be logged.  Twitter has elected to use the pattern where only explicitely "safe" messages (designated via a custom context object) are logged to output streams that will persist. If in doubt, you can log to the `TLSLogLevelDebug` log level, which is only ever logged in `DEBUG` builds.
+1) Any user sensitive information should not be logged to output streams that persist messages (including being sent over the network to be saved). You can configure your output stream to filter out logs to these sensitive channels.  Or do the inverse, and only permit certain "safe" channels to be logged.  Twitter has elected to use the pattern where only explicitely "safe" messages (designated via a custom context object) are logged to output streams that will persist. If in doubt, you can log to the `TLSLogLevelDebug` log level, which is only ever logged in `DEBUG` builds.
 
 2) Configure `DEBUG` builds to have a console output like `TLSNSLogOutputStream` or `TLSStdErrOutputStream` - but add only 1 or you'll spam the debug console.
 
