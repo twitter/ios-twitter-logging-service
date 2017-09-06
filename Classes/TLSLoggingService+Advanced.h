@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Method to indicate the behavior for the _service_ to use when a log message exceeds the maximum safe length.
- @param server The `TLSLoggingService`
+ @param service The `TLSLoggingService`
  @param maxSafeLength the maximum length that was exceeded
  @param level The `TLSLogLevel` of the message
  @param channel The channel of the message
