@@ -17,8 +17,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import "TLSFileOutputStream+Protected.h"
-#import "TLSProtocols.h"
+#import <TwitterLoggingService/TLSFileOutputStream+Protected.h>
+#import <TwitterLoggingService/TLSProtocols.h>
 
 /**
  Enumeration of events the `TLSRollingFileOutputStream` will go through

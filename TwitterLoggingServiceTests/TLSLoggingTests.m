@@ -6,7 +6,6 @@
 //  Copyright (c) 2016 Twitter, Inc.
 //
 
-#include <TargetConditionals.h> // for TARGET_IPHONE_SIMULATOR
 #include <pthread.h>
 
 #import <TwitterLoggingService/TwitterLoggingService.h>

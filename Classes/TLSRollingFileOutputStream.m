@@ -45,7 +45,7 @@ static const unsigned long long kMaxBytesTotal = 4ULL * 1024ULL * 1024ULL * 1024
 
 typedef long long TLSLogFileId;
 
-NS_INLINE TLSLogFileId _GenerateLogFileId();
+NS_INLINE TLSLogFileId _GenerateLogFileId(void);
 NS_INLINE TLSLogFileId _GenerateLogFileId()
 {
     static NSDate *sReferenceDate;

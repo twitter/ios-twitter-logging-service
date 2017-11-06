@@ -17,6 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+#import "TLS_Project.h"
 #import "TLSFileOutputStream+Protected.h"
 
 static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";

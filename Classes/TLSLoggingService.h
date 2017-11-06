@@ -17,7 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import "TLSProtocols.h"
+#import <TwitterLoggingService/TLSProtocols.h>
 
 /**
  Singleton object for a project to log messages in an efficient, thread safe and asynchronous way.
