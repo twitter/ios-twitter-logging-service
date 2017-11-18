@@ -189,7 +189,7 @@ class TLSLoggingSwiftTest: XCTestCase
     }
 
     func expectationForLoggingLevel(_ level: TLSLogLevel) -> XCTestExpectation {
-        return self.expectation(forNotification: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue, object: nil, handler: { (note: Notification) in
+        return self.expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue), object: nil, handler: { (note: Notification) in
             let messageInfo: TLSLogMessageInfo = note.object as! TLSLogMessageInfo
             return messageInfo.level == level
         })
@@ -258,7 +258,7 @@ class TLSLoggingSwiftTest: XCTestCase
     func testCrashlyticsOutputStream()
     {
         var longMessage = "This is a long message that will exceed 16KB so that we can test that it will be discarded."
-        while (longMessage.characters.count < 16 * 1024) {
+        while (longMessage.count < 16 * 1024) {
             longMessage += longMessage
         }
         let crashlyticsOutputStream = TLSLoggingSwiftTestCrashlyticsOutputStream()
@@ -295,7 +295,7 @@ class TLSLoggingSwiftTest: XCTestCase
     func testExtraLargeLogMessage()
     {
         var longMessage = "This is a long message that will exceed 16KB so that we can test that it will be discarded."
-        while (longMessage.characters.count < 16 * 1024) {
+        while (longMessage.count < 16 * 1024) {
             longMessage += longMessage
         }
 
@@ -310,13 +310,13 @@ class TLSLoggingSwiftTest: XCTestCase
 
         // will log
         service.maximumSafeMessageLength = 0
-        expectation = self.expectation(forNotification: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue, object: nil, handler: nil)
+        expectation = self.expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue), object: nil, handler: nil)
         TLSLogString(service, TLSLogLevel.error, "AnyChannel", #file, #function, UInt32(#line), nil, TLSLogMessageOptions(), longMessage)
         self.waitForExpectations(timeout: 10, handler: nil)
 
         // won't log
         service.maximumSafeMessageLength = 16 * 1024
-        expectation = self.expectation(forNotification: Notification.Name.LoggingSwiftTestDiscardedMessageNotification.rawValue, object: nil, handler: nil)
+        expectation = self.expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.LoggingSwiftTestDiscardedMessageNotification.rawValue), object: nil, handler: nil)
         TLSLogString(service, TLSLogLevel.error, "AnyChannel", #file, #function, UInt32(#line), nil, TLSLogMessageOptions(), longMessage)
         self.waitForExpectations(timeout: 10, handler: nil)
 

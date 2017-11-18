@@ -19,9 +19,9 @@
 
 #include <sys/sysctl.h>
 
-#import "TLS_Project.h"
-#import "TLSDeclarations.h"
-#import "TLSLog.h"
+#import <TwitterLoggingService/TLS_Project.h>
+#import <TwitterLoggingService/TLSDeclarations.h>
+#import <TwitterLoggingService/TLSLog.h>
 
 NSString * const TLSErrorDomain = @"TLSErrorDomain";
 

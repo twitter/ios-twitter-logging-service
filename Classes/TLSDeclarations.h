@@ -25,7 +25,7 @@
 FOUNDATION_EXTERN NSString * __nonnull const TLSErrorDomain;
 
 /** Pull out an name for the current thread or `nil` if no name was identified */
-FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName();
+FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName(void);
 
 /**
  These are syslog compatible log levels for use with *TwitterLoggingService*.

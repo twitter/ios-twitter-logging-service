@@ -21,7 +21,7 @@
 #define __TLSLOG_H__
 
 #import <Foundation/Foundation.h>
-#import "TLSDeclarations.h"
+#import <TwitterLoggingService/TLSDeclarations.h>
 
 @class TLSLoggingService;
 
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level) __attribute__((const));
 
 //! A default application log channel if no custom channel is desired
-FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault() __attribute__((const));
+FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault(void) __attribute__((const));
 
 //! Macro to a default application log channel
 #define TLSLogChannelDefault TLSLogChannelApplicationDefault()

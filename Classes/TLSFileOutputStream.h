@@ -17,7 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import "TLSProtocols.h"
+#import <TwitterLoggingService/TLSProtocols.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,9 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
  The file output stream will output to a file descriptor but for system performance an I/O write
  doesn't happen synchronously, it gets buffered until one of the following is encountered:
 
-   1. enough output is buffered
-   2. the file descriptor is closed
-   3. the file descriptor is explicitly flushed
+    1. enough output is buffered
+    2. the file descriptor is closed
+    3. the file descriptor is explicitly flushed
 
  For debugging, you can use the exposed property on the file output stream to explicitly flush on
  every write, but it is recommended to only do so when trying to debug something specific and never
@@ -42,10 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
  method.  It is recommended that you `flush` whenever you encounter an explicit need to have the
  buffered I/O be output to disk, such as:
 
-   1. When the app backgrounds
-   2. When the app is terminated
-   3. When a crash is detected (call it JIT flushing)
-   4. When the logs need to be read (like when you zip them up for a bug report)
+    1. When the app backgrounds
+    2. When the app is terminated
+    3. When a crash is detected (call it JIT flushing)
+    4. When the logs need to be read (like when you zip them up for a bug report)
 
  */
 @interface TLSFileOutputStream : NSObject <TLSOutputStream>

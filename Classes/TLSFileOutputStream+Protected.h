@@ -17,7 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import "TLSFileOutputStream.h"
+#import <TwitterLoggingService/TLSFileOutputStream.h>
 
 /**
  ## Protected category

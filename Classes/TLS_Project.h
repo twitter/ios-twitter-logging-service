@@ -40,7 +40,7 @@
     typedef char _TLS_COMPILER_ASSERT(__LINE__, msg) [ (cond) ? 1 : -1 ]
 
 //! Best effort attempt to get the binary name of the current process
-FOUNDATION_EXTERN NSString *TLSGetProcessBinaryName();
+FOUNDATION_EXTERN NSString *TLSGetProcessBinaryName(void);
 
 /** Does the `mask` have at least 1 of the bits in `flags` set */
 #define TLS_BITMASK_INTERSECTS_FLAGS(mask, flags)   (((mask) & (flags)) != 0)
