@@ -155,7 +155,7 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     }
 
     if (error) {
-        [self tls_fileOutputEventFailed:TLSRollingFileOutputEventInitialize info:[error userInfo] error:error];
+        [self tls_fileOutputEventFailed:TLSRollingFileOutputEventInitialize info:error.userInfo error:error];
 
         if (errorOut) {
             *errorOut = error;

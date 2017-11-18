@@ -13,7 +13,7 @@
 
 static void LogStream(id<TLSOutputStream> stream, TLSLogLevel level, NSString *channel, NSString *file, NSString *function, unsigned int line, NSString *format, ...);
 static NSTimeInterval NSTimeIntervalFromTLSFileOutputStreamTimestamp(NSString *timestamp);
-static id GenerateLoggingArgument();
+static id GenerateLoggingArgument(void);
 static void TurnConsoleChannelOn(NSString *channel, BOOL on);
 static BOOL IsConsoleChannelOn(NSString *channel);
 
@@ -612,7 +612,7 @@ static NSMutableDictionary *sRuntimes;
         NSData *newlineData = [NSData dataWithBytes:"\n" length:1];
         NSData *data = [sLoggingService retrieveLoggedDataFromOutputStream:sRollingFileOut maxBytes:0];
         NSUInteger dataLength1 = data.length;
-        XCTAssertTrue(data.length <= (sRollingFileOut.maxBytesPerLogFile * 2), @"Logs were not rolled over at the right time!");
+        XCTAssertLessThanOrEqual(data.length, (sRollingFileOut.maxBytesPerLogFile * 2), @"Logs were not rolled over at the right time!");
         NSRange r;
         r.length = [data rangeOfData:newlineData options:NSDataSearchBackwards range:NSMakeRange(0, dataLength1 / 2)].location;
         r.location = [data rangeOfData:newlineData options:NSDataSearchBackwards range:NSMakeRange(0, r.length - 2)].location + 1;
@@ -620,12 +620,12 @@ static NSMutableDictionary *sRuntimes;
         NSString *exampleNewer = [[NSString alloc] initWithData:[data subdataWithRange:r] encoding:sRollingFileOut.tls_loggedDataEncoding];
         data = [sLoggingService retrieveLoggedDataFromOutputStream:sRollingFileOut maxBytes:sRollingFileOut.maxBytesPerLogFile + (2 * dataLength1)];
         NSUInteger dataLength2 = data.length;
-        XCTAssertTrue(data.length <= (sRollingFileOut.maxBytesPerLogFile * 3), @"Logs were not rolled over at the right time!");
+        XCTAssertLessThanOrEqual(data.length, (sRollingFileOut.maxBytesPerLogFile * 3), @"Logs were not rolled over at the right time!");
         r.location = 0;
         r.length = dataLength2 - dataLength1;
         data = [data subdataWithRange:r];
-        XCTAssertTrue(data.length == dataLength2 - dataLength1, @"Didn't create subset of data correctly");
-        XCTAssertTrue(data.length <= (sRollingFileOut.maxBytesPerLogFile * 2), @"Logs were not rolled over at the right time!");
+        XCTAssertEqual(data.length, dataLength2 - dataLength1, @"Didn't create subset of data correctly");
+        XCTAssertLessThanOrEqual(data.length, (sRollingFileOut.maxBytesPerLogFile * 2), @"Logs were not rolled over at the right time!");
         r.length = [data rangeOfData:newlineData options:NSDataSearchBackwards range:NSMakeRange(0, dataLength1 / 2)].location;
         r.location = [data rangeOfData:newlineData options:NSDataSearchBackwards range:NSMakeRange(0, r.length - 2)].location + 1;
         r.length -= r.location;
@@ -640,20 +640,20 @@ static NSMutableDictionary *sRuntimes;
             return [(NSString *)obj length] == 0;
         }]];
         XCTAssertNotEqualObjects(tokensOlder, tokensNewer, @"Log lines should differ between files");
-        XCTAssertTrue(tokensOlder.count >= 5, @"Must have at minimum: timestamp, threadId, channel, level and message in log entries");
-        XCTAssertTrue(tokensNewer.count >= 5, @"Must have at minimum: timestamp, threadId, channel, level and message in log entries");
+        XCTAssertGreaterThanOrEqual(tokensOlder.count, 5, @"Must have at minimum: timestamp, threadId, channel, level and message in log entries");
+        XCTAssertGreaterThanOrEqual(tokensNewer.count, 5, @"Must have at minimum: timestamp, threadId, channel, level and message in log entries");
         XCTAssertTrue([levels containsObject:tokensNewer[3]], @"Log level must be Error, Warning, Information or Debug");
         XCTAssertTrue([levels containsObject:tokensOlder[3]], @"Log level must be Error, Warning, Information or Debug");
         XCTAssertTrue([tokensNewer[2] hasPrefix:TLSLogChannelDefault], @"Logging channel is wrong");
         XCTAssertTrue([tokensOlder[2] hasPrefix:TLSLogChannelDefault], @"Logging channel is wrong");
         NSTimeInterval tiOlder = NSTimeIntervalFromTLSFileOutputStreamTimestamp(tokensOlder[0]);
         NSTimeInterval tiNewer = NSTimeIntervalFromTLSFileOutputStreamTimestamp(tokensNewer[0]);
-        XCTAssertTrue(tiOlder > 0.0f, @"Invalid timestamp");
-        XCTAssertTrue(tiNewer > 0.0f, @"Invalid timestamp");
+        XCTAssertGreaterThan(tiOlder, 0.0, @"Invalid timestamp");
+        XCTAssertGreaterThan(tiNewer, 0.0, @"Invalid timestamp");
         if ([tokensNewer[1] isEqualToString:tokensOlder[1]]) {
-            XCTAssertTrue(tiNewer >= tiOlder, @"Newer timestamp must be greater than older timestamp");
+            XCTAssertGreaterThanOrEqual(tiNewer, tiOlder, @"Newer timestamp must be greater than older timestamp");
         } else if (tiOlder > tiNewer) {
-            XCTAssertTrue(tiNewer >= tiOlder + 0.1, @"Newer timestamp must be greater than older timestamp: %@ then %@", tokensOlder[0], tokensNewer[0]);
+            XCTAssertGreaterThanOrEqual(tiNewer, tiOlder + 0.1, @"Newer timestamp must be greater than older timestamp: %@ then %@", tokensOlder[0], tokensNewer[0]);
         }
     }
 
@@ -662,7 +662,7 @@ static NSMutableDictionary *sRuntimes;
     [logs removeObjectsAtIndexes:[logs indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         return ![[(NSString *)obj lastPathComponent] hasPrefix:sRollingFileOut.logFilePrefix];
     }]];
-    XCTAssertTrue(logs.count == sRollingFileOut.maxLogFiles, @"Logs must have rolled over and been pruned!");
+    XCTAssertEqual(logs.count, sRollingFileOut.maxLogFiles, @"Logs must have rolled over and been pruned!");
     [logs sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(id obj1, id obj2) {
         NSString *path1 = obj1;
         NSString *path2 = obj2;
@@ -678,7 +678,7 @@ static NSMutableDictionary *sRuntimes;
             XCTAssertNotNil(string, @"reading log file must result in nil string");
             NSArray *lines = [string componentsSeparatedByString:@"\n"];
             string = nil;
-            XCTAssertTrue(lines.count > 0, @"each log file must have at least 1 line");
+            XCTAssertGreaterThan(lines.count, 0, @"each log file must have at least 1 line");
             for (NSString *line in lines) {
                 NSMutableArray *tokens = [[line componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] mutableCopy];
                 [tokens removeObjectsAtIndexes:[tokens indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
@@ -1075,9 +1075,14 @@ static void LogStream(id<TLSOutputStream> stream, TLSLogLevel level, NSString *c
 
 static NSTimeInterval NSTimeIntervalFromTLSFileOutputStreamTimestamp(NSString *timestamp)
 {
-    NSMutableArray *timestampElements = [[timestamp componentsSeparatedByString:@":"] mutableCopy];
+    NSMutableArray<NSString *> *timestampElements = [[timestamp componentsSeparatedByString:@":"] mutableCopy];
     if (!timestampElements) {
         timestampElements = [NSMutableArray array];
+    }
+    if ([timestampElements.lastObject rangeOfString:@"."].location != NSNotFound) {
+        NSArray<NSString *> *dotSeperatedEnd = [timestampElements.lastObject componentsSeparatedByString:@"."];
+        [timestampElements removeLastObject];
+        [timestampElements addObjectsFromArray:dotSeperatedEnd];
     }
     while (timestampElements.count < 4) {
         [timestampElements insertObject:@"0" atIndex:0];

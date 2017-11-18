@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		3DED5FE9194698ED00EDBD9A /* TLSFileOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DED5FE7194698ED00EDBD9A /* TLSFileOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3DED5FEA194698ED00EDBD9A /* TLSFileOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DED5FE8194698ED00EDBD9A /* TLSFileOutputStream.m */; };
-		8B24E6141FB116C600F0EB45 /* libTwitterLoggingService.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31CCEF1858CBC6008B0BF1 /* libTwitterLoggingService.a */; };
-		8B24E6151FB1175E00F0EB45 /* TwitterLoggingService.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD1C1858CD99008B0BF1 /* TwitterLoggingService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B31CCF31858CBC6008B0BF1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31CCF21858CBC6008B0BF1 /* Foundation.framework */; };
 		8B31CD021858CBC6008B0BF1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31CCF21858CBC6008B0BF1 /* Foundation.framework */; };
 		8B31CD1B1858CCB1008B0BF1 /* TLSLoggingService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B31CD1A1858CCB1008B0BF1 /* TLSLoggingService.m */; };
@@ -29,6 +27,7 @@
 		8B7DB1571869EC2600999DA0 /* ExampleAppConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7DB1561869EC2600999DA0 /* ExampleAppConsoleViewController.m */; };
 		8B7DB15A1869EC2600999DA0 /* ExampleMakeLogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7DB1591869EC2600999DA0 /* ExampleMakeLogsViewController.m */; };
 		8B7DB15C1869EC2600999DA0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B7DB15B1869EC2600999DA0 /* Images.xcassets */; };
+		8B7DB1771869EC9300999DA0 /* libTwitterLoggingService.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31CCEF1858CBC6008B0BF1 /* libTwitterLoggingService.a */; };
 		8B7DB17A1869ED9E00999DA0 /* ExampleConfigureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7DB1791869ED9E00999DA0 /* ExampleConfigureViewController.m */; };
 		8B7DB1801869EF5700999DA0 /* TLSLoggingService+ExampleAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7DB17F1869EF5700999DA0 /* TLSLoggingService+ExampleAdditions.m */; };
 		8B7DB1831869F01600999DA0 /* ExampleTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7DB1821869F01600999DA0 /* ExampleTextView.m */; };
@@ -36,6 +35,7 @@
 		8B897CFD1863BF7600359106 /* TLSCrashlyticsOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD3B1858DDAA008B0BF1 /* TLSCrashlyticsOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B897CFE1863BF7600359106 /* TLSFileOutputStream+Protected.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5C48D2185B7755004F503A /* TLSFileOutputStream+Protected.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B897CFF1863BF7600359106 /* TLSRollingFileOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD2D1858DB9F008B0BF1 /* TLSRollingFileOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8B897D001863BF7600359106 /* TwitterLoggingService.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD1C1858CD99008B0BF1 /* TwitterLoggingService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B897D021863BF7600359106 /* TLSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD241858D004008B0BF1 /* TLSLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B897D031863BF7600359106 /* TLSLoggingService+Advanced.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD1D1858CF3A008B0BF1 /* TLSLoggingService+Advanced.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B897D041863BF7600359106 /* TLSLoggingService.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD191858CCB1008B0BF1 /* TLSLoggingService.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -88,19 +88,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8B24E6121FB116C100F0EB45 /* PBXContainerItemProxy */ = {
+		8B9C928F1CEFA9C30052BA09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B31CCE71858CBC6008B0BF1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 8B31CCEE1858CBC6008B0BF1;
 			remoteInfo = TwitterLoggingService;
-		};
-		8B78F2981C63A62B000194DF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8B31CCE71858CBC6008B0BF1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B3E9D3B719CA3D2C00C43025;
-			remoteInfo = TFNLoggingKit;
 		};
 		BF4A9F271EE214F1001647B5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -205,7 +198,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B24E6141FB116C600F0EB45 /* libTwitterLoggingService.a in Frameworks */,
+				8B7DB1771869EC9300999DA0 /* libTwitterLoggingService.a in Frameworks */,
 				8B7DB1431869EC2600999DA0 /* CoreGraphics.framework in Frameworks */,
 				8B7DB1451869EC2600999DA0 /* UIKit.framework in Frameworks */,
 				8B7DB1411869EC2600999DA0 /* Foundation.framework in Frameworks */,
@@ -408,9 +401,9 @@
 				8B897D061863BF7600359106 /* TLSProtocols.h in Headers */,
 				8B897D041863BF7600359106 /* TLSLoggingService.h in Headers */,
 				8B897D031863BF7600359106 /* TLSLoggingService+Advanced.h in Headers */,
+				8B897D001863BF7600359106 /* TwitterLoggingService.h in Headers */,
 				8B897CFC1863BF7600359106 /* TLSConsoleOutputStreams.h in Headers */,
 				8B897CFD1863BF7600359106 /* TLSCrashlyticsOutputStream.h in Headers */,
-				8B24E6151FB1175E00F0EB45 /* TwitterLoggingService.h in Headers */,
 				8B897D051863BF7600359106 /* TLSDeclarations.h in Headers */,
 				3DED5FE9194698ED00EDBD9A /* TLSFileOutputStream.h in Headers */,
 				8B897D021863BF7600359106 /* TLSLog.h in Headers */,
@@ -509,7 +502,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				8B24E6131FB116C100F0EB45 /* PBXTargetDependency */,
+				8B9C92901CEFA9C30052BA09 /* PBXTargetDependency */,
 			);
 			name = ExampleLogger;
 			productName = ExampleLogger;
@@ -578,7 +571,7 @@
 			attributes = {
 				CLASSPREFIX = TLS;
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = Twitter;
 				TargetAttributes = {
 					8B31CCFE1858CBC6008B0BF1 = {
@@ -781,14 +774,20 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -821,6 +820,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwitterLoggingService;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -832,14 +832,20 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -867,6 +873,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwitterLoggingService;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
