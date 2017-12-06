@@ -92,8 +92,8 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B31CCE71858CBC6008B0BF1 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8B31CCEE1858CBC6008B0BF1;
-			remoteInfo = TwitterLoggingService;
+			remoteGlobalIDString = B3E9D3B719CA3D2C00C43025;
+			remoteInfo = TwitterLoggingService.framework;
 		};
 		BF4A9F271EE214F1001647B5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -302,9 +302,9 @@
 			isa = PBXGroup;
 			children = (
 				8BEA3B181C73A0FF003CB57F /* TLSLoggingSwiftTests.swift */,
+				8BEA3B1B1C73A0FF003CB57F /* TLSLoggingTests.m */,
 				8BEA3B191C73A0FF003CB57F /* TwitterLoggingServiceTests-Bridging-Header.h */,
 				8BEA3B1A1C73A0FF003CB57F /* TwitterLoggingServiceTests-Info.plist */,
-				8BEA3B1B1C73A0FF003CB57F /* TLSLoggingTests.m */,
 			);
 			name = TwitterLoggingServiceTests;
 			sourceTree = "<group>";
@@ -502,7 +502,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				8B9C92901CEFA9C30052BA09 /* PBXTargetDependency */,
 			);
 			name = ExampleLogger;
 			productName = ExampleLogger;
@@ -738,15 +737,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8B24E6131FB116C100F0EB45 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8B31CCEE1858CBC6008B0BF1 /* TwitterLoggingService */;
-			targetProxy = 8B24E6121FB116C100F0EB45 /* PBXContainerItemProxy */;
-		};
 		8B78F2991C63A62B000194DF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B3E9D3B719CA3D2C00C43025 /* TwitterLoggingService.framework */;
-			targetProxy = 8B78F2981C63A62B000194DF /* PBXContainerItemProxy */;
+			targetProxy = 8B9C928F1CEFA9C30052BA09 /* PBXContainerItemProxy */;
 		};
 		BF4A9F281EE214F1001647B5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
