@@ -18,26 +18,69 @@
 //
 
 //
-// use this configuration for differences from the default target settings that
-// require additional documentation
+// use this configuration for differences from the default target settings
+// for target settings that must differ between Debug configuration & Release
+// configuration, make the  specific setting change in the project.pbxproj .
+// (cf https://pewpewthespells.com/blog/xcconfig_guide.html#CondVarConfig for
+// why use of SETTING[config=Debug] does not do what we want.)
+
+
 //
+// Build Options
+
+APPLICATION_EXTENSION_API_ONLY = YES
+
+
+//
+// Code Signing
+
+CODE_SIGN_IDENTITY[sdk=iphoneos*] =
 
 
 //
 // Deployment
 
+INSTALL_PATH = $(LOCAL_LIBRARY_DIR)/Frameworks
+
 // Continue allowing the TwitterLoggingService.framework to be built for iOS 8
 // even when future versions of Xcode suggest a higher default Minimum Deployment Target
 IPHONEOS_DEPLOYMENT_TARGET = 8.0
 
+SKIP_INSTALL = YES
+
 
 //
 // Linking
+
+DYLIB_INSTALL_NAME_BASE = @rpath
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
 
 // necessary for ignoring undefined Crashlytics symbols that will be linked later
 OTHER_LDFLAGS = $(inherited) "-Wl,-U,_CLSLog"
 
 
 //
+// Packaging
+
+DEFINES_MODULE = YES
+INFOPLIST_FILE = ${PRODUCT_NAME}/Info.plist
+PRODUCT_BUNDLE_IDENTIFIER = com.twitter.$(PRODUCT_NAME:rfc1034identifier)
+PRODUCT_NAME = ${PROJECT_NAME}
+PUBLIC_HEADERS_FOLDER_PATH = ${PRODUCT_NAME}.framework/Headers
+
+
+//
+// Static Analyzer - Analysis Policy
+
+RUN_CLANG_STATIC_ANALYZER = $(RUN_CLANG_STATIC_ANALYZER_FOR_$(PRODUCT_NAME))
+
+
+//
 // Swift Compiler - Version
 SWIFT_VERSION = 4.0
+
+
+//
+// Versioning
+
+VERSIONING_SYSTEM = apple-generic

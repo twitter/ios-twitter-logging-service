@@ -26,7 +26,9 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
 
 #pragma mark - initialization/cleanup
 
-- (instancetype)initWithLogFileDirectoryPath:(NSString*)logFileDirectoryPath logFileName:(NSString*)logFileName error:(out NSError **)errorOut
+- (instancetype)initWithLogFileDirectoryPath:(NSString*)logFileDirectoryPath
+                                 logFileName:(NSString*)logFileName
+                                       error:(out NSError **)errorOut
 {
     if (0 == [logFileDirectoryPath length]) {
         if (errorOut) {
@@ -61,7 +63,8 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
     return self;
 }
 
-- (instancetype)initWithLogFileName:(NSString*)logFileName error:(out NSError **)errorOut
+- (instancetype)initWithLogFileName:(NSString*)logFileName
+                              error:(out NSError **)errorOut
 {
     return [self initWithLogFileDirectoryPath:[TLSFileOutputStream defaultLogFileDirectoryPath]
                                   logFileName:logFileName
@@ -177,7 +180,8 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
                                         error:errorOut];
 }
 
-+ (BOOL)createLogFileDirectoryAtPath:(NSString*)logFileDirectoryPath error:(out NSError **)errorOut
++ (BOOL)createLogFileDirectoryAtPath:(NSString*)logFileDirectoryPath
+                               error:(out NSError **)errorOut
 {
     if (0 == [logFileDirectoryPath length]) {
         if (errorOut) {
@@ -225,7 +229,8 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
     return YES;
 }
 
-- (BOOL)openLogFilePath:(NSString*)logFilePath error:(NSError **)errorOut
+- (BOOL)openLogFilePath:(NSString*)logFilePath
+                  error:(NSError **)errorOut
 {
     if (0 == [logFilePath length]) {
         if (errorOut) {
@@ -244,7 +249,9 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
             NSDictionary *info = @{ TLSFileOutputEventKeyNewLogFilePath : (logFilePath) ?: [NSNull null],
                                     @"message" : @"Could not create file for logging to!",
                                     @"exceptionName" : NSObjectInaccessibleException };
-            *errorOut = [NSError errorWithDomain:NSPOSIXErrorDomain code:errCode userInfo:info];
+            *errorOut = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                            code:errCode
+                                        userInfo:info];
         }
         return NO;
     }

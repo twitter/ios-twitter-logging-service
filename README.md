@@ -224,3 +224,13 @@ AND the given log *channel* has not been cached as a known to be an *always off*
 * `TLSCANLOGMODE=2`
 * `TLSCanLog` will base its return value on the filtering behavior of all the registered output streams
 * This will save on argument evalution but requires an expensive examination of all output streams
+
+# License
+
+Copyright 2013-2018 Twitter, Inc.
+
+Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+# Security Issues?
+
+Please report sensitive security issues via Twitter's bug-bounty program (https://hackerone.com/twitter) rather than GitHub.

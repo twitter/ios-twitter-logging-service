@@ -85,13 +85,21 @@ typedef NS_ENUM(TLSFileOutputEvent, TLSRollingFileOutputEvent) {
  @param errorOut an output reference to get any errors that occur while creating the output stream.  If there is an error, the return value will be `nil`.
  @note *maxBytesPerLogFile* is a soft maximum.  Once that cap is exceeded, the log rolls over to the next log file.  That doesn't mean it won't exceed the max number of bytes per log file though.
  */
-- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath logFilePrefix:(nullable NSString *)logFilePrefix maxLogFiles:(NSUInteger)maxLogFiles maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath
+                                        logFilePrefix:(nullable NSString *)logFilePrefix
+                                          maxLogFiles:(NSUInteger)maxLogFiles
+                                   maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile
+                                                error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_DESIGNATED_INITIALIZER;
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
-- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath logFilePrefix:(nullable NSString *)logFilePrefix maxLogFiles:(NSUInteger)maxLogFiles maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile;
+- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath
+                                        logFilePrefix:(nullable NSString *)logFilePrefix
+                                          maxLogFiles:(NSUInteger)maxLogFiles
+                                   maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile;
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
-- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
+- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath
+                                                error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
 - (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath;
@@ -100,9 +108,12 @@ typedef NS_ENUM(TLSFileOutputEvent, TLSRollingFileOutputEvent) {
 - (nullable instancetype)initWithOutError:(__autoreleasing NSError * __nullable * __nullable)errorOut;
 
 /** NS_UNAVAILABLE */
-- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString*)logFilePath logFileName:(nullable NSString*)logFileName error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_UNAVAILABLE;
+- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString*)logFilePath
+                                          logFileName:(nullable NSString*)logFileName
+                                                error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_UNAVAILABLE;
 /** NS_UNAVAILABLE */
-- (nullable instancetype)initWithLogFileName:(nullable NSString*)logFileName error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_UNAVAILABLE;
+- (nullable instancetype)initWithLogFileName:(nullable NSString*)logFileName
+                                       error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_UNAVAILABLE;
 
 /** Unavailable because super init is NS_UNAVAILABLE */
 - (nonnull instancetype)init NS_UNAVAILABLE;

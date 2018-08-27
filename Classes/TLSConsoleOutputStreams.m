@@ -70,38 +70,15 @@
 {
 #if OS_LOG_AVAILABLE
 
-    NSProcessInfo *procInfo = [NSProcessInfo processInfo];
-    if (![procInfo respondsToSelector:@selector(operatingSystemVersion)]) {
-        return NO;
-    }
-    NSOperatingSystemVersion osVersion = procInfo.operatingSystemVersion;
-
-#if TARGET_OS_IPHONE || TARGET_OS_TV
-
-    return osVersion.majorVersion >= 10;
-
-#elif TARGET_OS_MAC && !TARGET_OS_WATCH
-
-    if (osVersion.majorVersion < 10) {
-        // Mac OS 9
-        return NO;
-    } else if (osVersion.majorVersion > 10) {
-        // macOS 11, presumably
+#if !TARGET_OS_WATCH
+    if (@available(iOS 10, tvOS 10, macOS 10.12, *)) {
         return YES;
     }
+#endif
 
-    return osVersion.minorVersion >= 12; // 10.12+
-
-#else
-
-    (void)osVersion;
-    return NO;
-
-#endif // TARGET_OS
-
-#else // !OS_LOG_AVAILABLE
-    return NO;
 #endif // OS_LOG_AVAILABLE
+
+    return NO;
 }
 
 - (void)tls_outputLogInfo:(TLSLogMessageInfo *)logInfo

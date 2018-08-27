@@ -82,7 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  @return past log message data from a given stream
  */
-- (nullable NSData *)retrieveLoggedDataFromOutputStream:(id<TLSOutputStream, TLSDataRetrieval>)stream maxBytes:(NSUInteger)maxBytes;
+- (nullable NSData *)retrieveLoggedDataFromOutputStream:(id<TLSOutputStream, TLSDataRetrieval>)stream
+                                               maxBytes:(NSUInteger)maxBytes;
 
 @end
 
@@ -106,7 +107,15 @@ NS_ASSUME_NONNULL_BEGIN
 
  Default == `0`, discard message
  */
-- (NSUInteger)tls_loggingService:(TLSLoggingService *)service lengthToLogForMessageExceedingMaxSafeLength:(NSUInteger)maxSafeLength level:(TLSLogLevel)level channel:(NSString *)channel file:(NSString *)file function:(NSString *)function line:(unsigned int)line contextObject:(nullable id)contextObject message:(NSString *)message;
+- (NSUInteger)tls_loggingService:(TLSLoggingService *)service
+              lengthToLogForMessageExceedingMaxSafeLength:(NSUInteger)maxSafeLength
+              level:(TLSLogLevel)level
+              channel:(NSString *)channel
+              file:(NSString *)file
+              function:(NSString *)function
+              line:(NSInteger)line
+              contextObject:(nullable id)contextObject
+              message:(NSString *)message;
 
 @end
 

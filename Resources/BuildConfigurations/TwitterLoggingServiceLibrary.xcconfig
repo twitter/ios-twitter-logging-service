@@ -18,13 +18,49 @@
 //
 
 //
-// use this configuration for differences from the default target settings that
-// require additional documentation
+// use this configuration for differences from the default target settings,
+// for target settings that must differ between Debug configuration & Release
+// configuration, make the  specific setting change in the project.pbxproj .
+// (cf https://pewpewthespells.com/blog/xcconfig_guide.html#CondVarConfig for
+// why use of SETTING[config=Debug] does not do what we want.)
+
+
 //
+// Build Options
+
+APPLICATION_EXTENSION_API_ONLY = YES
 
 
 // Deployment
 
+DSTROOT = "/tmp/${PRODUCT_NAME}.dst"
+
 // Continue allowing the libTwitterLoggingService.a to be built for iOS 6
 // even when future versions of Xcode suggest a higher default Minimum Deployment Target
 IPHONEOS_DEPLOYMENT_TARGET = 6.0
+
+SKIP_INSTALL = YES
+
+
+//
+// Linking
+
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+
+//
+// Packaging
+
+PRODUCT_NAME = ${PROJECT_NAME}
+PUBLIC_HEADERS_FOLDER_PATH = include/${PRODUCT_NAME}
+
+
+//
+// Apple Clang - Language - Modules
+
+CLANG_ENABLE_MODULES = YES
+
+
+//
+// Static Analyzer - Analysis Policy
+
+RUN_CLANG_STATIC_ANALYZER = $(RUN_CLANG_STATIC_ANALYZER_FOR_$(PRODUCT_NAME))

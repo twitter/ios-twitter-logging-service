@@ -59,7 +59,9 @@ typedef NS_OPTIONS(NSInteger, TLSFilterStatus)
 
  @warning The implementation of this method must never call a `TLSLoggingService` method nor a `TLSLog` function.  Doing so could result in unintended deadlocks.
  */
-- (TLSFilterStatus)tls_shouldFilterLevel:(TLSLogLevel)level channel:(nonnull NSString *)channel contextObject:(nullable id)contextObject;
+- (TLSFilterStatus)tls_shouldFilterLevel:(TLSLogLevel)level
+                                 channel:(nonnull NSString *)channel
+                           contextObject:(nullable id)contextObject;
 
 @end
 
@@ -129,16 +131,19 @@ typedef NSInteger TLSFileOutputEvent;
 /**
   Signal that the event has started, with information about the event
  */
-- (void)tls_fileOutputEventBegan:(TLSFileOutputEvent)event info:(nullable NSDictionary *)info;
+- (void)tls_fileOutputEventBegan:(TLSFileOutputEvent)event
+                            info:(nullable NSDictionary *)info;
 
 /**
  Signal that the event has completed successfully, with information about the event
  */
-- (void)tls_fileOutputEventFinished:(TLSFileOutputEvent)event info:(nullable NSDictionary *)info;
+- (void)tls_fileOutputEventFinished:(TLSFileOutputEvent)event
+                               info:(nullable NSDictionary *)info;
 
 /**
  Signal that the event has failed to complete successfully, with information about the event failure
  */
-- (void)tls_fileOutputEventFailed:(TLSFileOutputEvent)event info:(nullable NSDictionary *)info error:(nonnull NSError *)error;
+- (void)tls_fileOutputEventFailed:(TLSFileOutputEvent)event
+                             info:(nullable NSDictionary *)info error:(nonnull NSError *)error;
 
 @end

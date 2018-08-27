@@ -10,25 +10,25 @@
 
 ## History
 
-### 2.5.0
+### 2.5.0 (09/13/2016)
 
 - Add options to _TLS_ with `TLSLogMessageOptions`
   - Provides support to explicitely ignore the maximum message length cap
   - Change `maximumSafeMessageLength` to truncate by default instead of discard when message length is too long and there is not delegate
 
-### 2.4.0
+### 2.4.0 (07/28/2016)
 
 - Create `TLSLoggingServiceDelegate` protocol.  Currently delegates the decision of what to do when a log message with an unsafe length is encountered.
 
-### 2.3.0
+### 2.3.0 (06/30/2016)
 
 - Add `os_log` support (iOS 10+ and macOS 10.12+) with `TLSOSLogOutputStream`
 
-### 2.2.1
+### 2.2.1 (05/31/2016)
 
 - Add cap to log message sizes.  Will also fire a notification that can be observed to identify where the message that was too large was logged from.
 
-### 2.2.0
+### 2.2.0   (05/19/2016)
 
 - Remove `TLSFileFunctionLine` struct since it is too easy to make mistakes such as constructing the struct on the stack with stack C-string values then accessing copies of the struct from other threads that should not have references to the stack C-string values. 
 

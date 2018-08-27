@@ -55,7 +55,8 @@
  Create a log file directory at the designated path and set the `logFileDirectoryPath` property.
  @return NO if there is an error and _errorOut_ will be set
  */
-+ (BOOL)createLogFileDirectoryAtPath:(nonnull NSString*)logFileDirectoryPath error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
++ (BOOL)createLogFileDirectoryAtPath:(nonnull NSString*)logFileDirectoryPath
+                               error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
 
 /**
  This is the method that actually writes the formatted log message data.
@@ -73,7 +74,8 @@
  @param logFilePath must be non-nil
  @return YES if the file was opened, and NO if not.
  */
-- (BOOL)openLogFilePath:(nonnull NSString*)logFilePath error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
+- (BOOL)openLogFilePath:(nonnull NSString*)logFilePath
+                  error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
 
 #pragma mark Write Methods
 

@@ -25,21 +25,18 @@
 //
 // Build Options
 
-// the following 2 settings are used for the same purpose depending upon whether
-// being build using {Xcode 7} or {Xcode 8 and beyond}
-
 // Xcode 8 and beyond
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
-// Xcode 7
-EMBEDDED_CONTENT_CONTAINS_SWIFT = YES
 
 
 //
 // Deployment
 
-// Continue allowing the ExampleLogger.app (linking the lib.a) to be built for iOS 6
-// even when future versions of Xcode suggest a higher default Minimum Deployment Target
-IPHONEOS_DEPLOYMENT_TARGET = 6.0
+// Continue allowing the ExampleLogger.app (linking the lib.a) to be built for iOS 7
+// (the minimum for Xcode 8, which is the oldest version Apple allows to be used for
+// submitting apps to the app store), even when future versions of Xcode default to
+// a higher minimum deployment target.
+IPHONEOS_DEPLOYMENT_TARGET = 7.0
 
 //
 // Signing
