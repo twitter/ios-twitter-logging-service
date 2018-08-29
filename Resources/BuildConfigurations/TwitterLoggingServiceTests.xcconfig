@@ -43,6 +43,12 @@ DEBUG_INFORMATION_FORMAT = dwarf
 
 
 //
+// Code Signing
+
+CODE_SIGN_IDENTITY[sdk=tvos*] =
+
+
+//
 // Deployment
 
 // Continue allowing the TwitterLoggingServiceTests (linking the .framework) to be built for iOS 8

@@ -111,6 +111,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3DCA01A32136618B0004572F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B31CCE71858CBC6008B0BF1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B31CCEE1858CBC6008B0BF1;
+			remoteInfo = TwitterLoggingService;
+		};
 		8B9C928F1CEFA9C30052BA09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B31CCE71858CBC6008B0BF1 /* Project object */;
@@ -573,6 +580,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3DCA01A42136618B0004572F /* PBXTargetDependency */,
 			);
 			name = ExampleLogger;
 			productName = ExampleLogger;
@@ -891,6 +899,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3DCA01A42136618B0004572F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B31CCEE1858CBC6008B0BF1 /* TwitterLoggingService */;
+			targetProxy = 3DCA01A32136618B0004572F /* PBXContainerItemProxy */;
+		};
 		8B78F2991C63A62B000194DF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B3E9D3B719CA3D2C00C43025 /* TwitterLoggingService.framework */;
@@ -1028,6 +1041,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D82FF9B1E8DB3DC00D01B05 /* TwitterLoggingServiceTests.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				PRODUCT_NAME = TwitterLoggingServiceTests;
 				SDKROOT = appletvos;
@@ -1040,6 +1054,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D82FF9B1E8DB3DC00D01B05 /* TwitterLoggingServiceTests.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				PRODUCT_NAME = TwitterLoggingServiceTests;
 				SDKROOT = appletvos;
@@ -1125,6 +1140,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twitter.TwitterLoggingService.OSXTwitterLoggingService-frameworkTests";
@@ -1144,6 +1160,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twitter.TwitterLoggingService.OSXTwitterLoggingService-frameworkTests";

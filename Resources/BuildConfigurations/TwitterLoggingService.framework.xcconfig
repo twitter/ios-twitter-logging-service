@@ -35,6 +35,7 @@ APPLICATION_EXTENSION_API_ONLY = YES
 // Code Signing
 
 CODE_SIGN_IDENTITY[sdk=iphoneos*] =
+CODE_SIGN_IDENTITY[sdk=tvos*] =
 
 
 //

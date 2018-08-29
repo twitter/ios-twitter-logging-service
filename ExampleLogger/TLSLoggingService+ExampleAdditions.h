@@ -6,7 +6,7 @@
 //  Copyright (c) 2016 Twitter, Inc.
 //
 
-@import TwitterLoggingService;
+#import <TwitterLoggingService/TLSLoggingService.h>
 
 FOUNDATION_EXTERN NSString * const ExampleLogChannelOne;
 FOUNDATION_EXTERN NSString * const ExampleLogChannelTwo;
