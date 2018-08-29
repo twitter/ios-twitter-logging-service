@@ -18,9 +18,16 @@
 //
 
 //
-// use this configuration for differences from the default target settings that
-// require additional documentation
+// use this configuration for differences from the default target settings.
+// for target settings that must differ between Debug configuration & Release
+// configuration, make the  specific setting change in the project.pbxproj .
+// (cf https://pewpewthespells.com/blog/xcconfig_guide.html#CondVarConfig for
+// why use of SETTING[config=Debug] does not do what we want.)
+
 //
+// Architectures
+
+ONLY_ACTIVE_ARCH = YES
 
 
 //
@@ -31,8 +38,14 @@
 
 // Xcode 8 and beyond
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
-// Xcode 7
-EMBEDDED_CONTENT_CONTAINS_SWIFT = YES
+
+DEBUG_INFORMATION_FORMAT = dwarf
+
+
+//
+// Code Signing
+
+CODE_SIGN_IDENTITY[sdk=tvos*] =
 
 
 //
@@ -46,10 +59,26 @@ IPHONEOS_DEPLOYMENT_TARGET = 8.0
 //
 // Linking
 
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+
 // necessary for ignoring undefined Crashlytics symbols that this Test target doesn't need
 OTHER_LDFLAGS = $(inherited) "-Wl,-U,_CLSLog"
 
 
 //
-// Swift Compiler - Version
+// Packaging
+
+INFOPLIST_FILE = ${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist
+PRODUCT_BUNDLE_IDENTIFIER = com.twitter.${PRODUCT_NAME:rfc1034identifier}
+PRODUCT_NAME = ${TARGET_NAME}
+
+//
+// Swift Compiler - General
+
+SWIFT_OBJC_BRIDGING_HEADER = ${PRODUCT_NAME}/${PRODUCT_NAME}-Bridging-Header.h
+
+
+//
+// Swift Compiler - Language
+
 SWIFT_VERSION = 4.0

@@ -6,7 +6,8 @@
 //  Copyright (c) 2016 Twitter, Inc.
 //
 
-@import TwitterLoggingService;
+#import <TwitterLoggingService/TwitterLoggingService.h>
+
 @import UIKit;
 
 // NOTE: for this demo, ExampleTextView will grow it's text content unbounded.  This is not a good thing in practice.

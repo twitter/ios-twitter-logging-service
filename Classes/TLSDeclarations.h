@@ -37,7 +37,7 @@ FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName(void);
 
  ## Levels to strings
 
- FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level) __attribute__((const));
+ FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level);
 
  */
 typedef NS_ENUM(NSUInteger, TLSLogLevel)
@@ -133,7 +133,7 @@ typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
 /** The `@__FUNCTION__` of the log message */
 @property (nonatomic, nonnull, copy, readonly) NSString *function;
 /** The `__LINE__` of the log message */
-@property (nonatomic, readonly) unsigned int line;
+@property (nonatomic, readonly) NSInteger line;
 /** The `NSString*` channel */
 @property (nonatomic, nonnull, copy, readonly) NSString *channel;
 /** The context object */
@@ -166,7 +166,17 @@ typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
 /**
  Designated initializer
  */
-- (nonnull instancetype)initWithLevel:(TLSLogLevel)level file:(nonnull NSString *)file function:(nonnull NSString *)function line:(unsigned int)line channel:(nonnull NSString *)channel timestamp:(nonnull NSDate *)timestamp logLifespan:(NSTimeInterval)logLifespan threadId:(unsigned int)threadId threadName:(nullable NSString *)threadName contextObject:(nullable id)contextObject message:(nonnull NSString *)message NS_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithLevel:(TLSLogLevel)level
+                                 file:(nonnull NSString *)file
+                             function:(nonnull NSString *)function
+                                 line:(NSInteger)line
+                              channel:(nonnull NSString *)channel
+                            timestamp:(nonnull NSDate *)timestamp
+                          logLifespan:(NSTimeInterval)logLifespan
+                             threadId:(unsigned int)threadId
+                           threadName:(nullable NSString *)threadName
+                        contextObject:(nullable id)contextObject
+                              message:(nonnull NSString *)message NS_DESIGNATED_INITIALIZER;
 
 /**
  `NS_UNAVAILABLE`

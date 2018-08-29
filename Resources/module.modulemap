@@ -1,8 +1,54 @@
 module TwitterLoggingService {
-    umbrella header "TwitterLoggingService.h"
 
     export *
-    module * {
+
+    module TLSLog {
+        header "TLSLog.h"
+        export *
+    }
+
+    module TLSConsoleOutputStreams {
+        header "TLSConsoleOutputStreams.h"
+        export *
+    }
+
+    module TLSCrashlyticsOutputStream {
+        header "TLSCrashlyticsOutputStream.h"
+        export *
+    }
+
+    module TLSDeclarations {
+        header "TLSDeclarations.h"
+        export *
+    }
+
+    module TLSFileOutputStream {
+        header "TLSFileOutputStream.h"
+        export *
+    }
+
+    module TLSFileOutputStream_Protected {
+        header "TLSFileOutputStream+Protected.h"
+        export *
+    }
+
+    module TLSLoggingService {
+        header "TLSLoggingService.h"
+        export *
+    }
+
+    module TLSLoggingService_Advanced {
+        header "TLSLoggingService+Advanced.h"
+        export *
+    }
+
+    module TLSProtocols {
+        header "TLSProtocols.h"
+        export *
+    }
+
+    module TLSRollingFileOutputStream {
+        header "TLSRollingFileOutputStream.h"
         export *
     }
 }

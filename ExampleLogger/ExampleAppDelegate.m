@@ -6,6 +6,9 @@
 //  Copyright (c) 2016 Twitter, Inc.
 //
 
+#import <TwitterLoggingService/TLSLog.h>
+#import <TwitterLoggingService/TLSLoggingService+Advanced.h>
+
 #import "ExampleAppConsoleViewController.h"
 #import "ExampleAppDelegate.h"
 #import "ExampleConfigureViewController.h"

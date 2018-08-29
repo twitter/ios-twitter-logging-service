@@ -31,7 +31,17 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
     NSString *_fileFunctionLineString;
 }
 
-- (instancetype)initWithLevel:(TLSLogLevel)level file:(NSString *)file function:(NSString *)function line:(unsigned int)line channel:(NSString *)channel timestamp:(NSDate *)timestamp logLifespan:(NSTimeInterval)logLifespan threadId:(unsigned int)threadId threadName:(NSString *)threadName contextObject:(id)contextObject message:(NSString *)message
+- (instancetype)initWithLevel:(TLSLogLevel)level
+                         file:(NSString *)file
+                     function:(NSString *)function
+                         line:(NSInteger)line
+                      channel:(NSString *)channel
+                    timestamp:(NSDate *)timestamp
+                  logLifespan:(NSTimeInterval)logLifespan
+                     threadId:(unsigned int)threadId
+                   threadName:(NSString *)threadName
+                contextObject:(id)contextObject
+                      message:(NSString *)message
 {
     if (self = [super init]) {
         _level = level;
@@ -94,7 +104,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
 - (NSString *)composeFileFunctionLineString
 {
     if (!_fileFunctionLineString) {
-        _fileFunctionLineString = [NSString stringWithFormat:@"(%@:%d %@)", self.file.lastPathComponent, self.line, self.function];
+        _fileFunctionLineString = [NSString stringWithFormat:@"(%@:%li %@)", self.file.lastPathComponent, (long)self.line, self.function];
     }
     return _fileFunctionLineString;
 }
@@ -103,7 +113,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
 
 NSString *TLSLogLevelToString(TLSLogLevel level)
 {
-    static NSString *sLevelStrings[] = {
+    static NSString * const sLevelStrings[] = {
         @"OMG",
         @"ALR",
         @"CRI",

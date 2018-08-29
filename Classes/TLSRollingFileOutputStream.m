@@ -21,6 +21,8 @@
 #import "TLSLoggingService+Advanced.h"
 #import "TLSRollingFileOutputStream.h"
 
+#define SELF_ARG PRIVATE_SELF(TLSRollingFileOutputStream)
+
 NSString * const TLSRollingFileOutputStreamDefaultLogFilePrefix = @"log.";
 const NSUInteger TLSRollingFileOutputStreamDefaultMaxBytesPerLogFile = (1024 * 256);
 const NSUInteger TLSRollingFileOutputStreamDefaultMaxLogFiles = 10;
@@ -45,8 +47,8 @@ static const unsigned long long kMaxBytesTotal = 4ULL * 1024ULL * 1024ULL * 1024
 
 typedef long long TLSLogFileId;
 
-NS_INLINE TLSLogFileId _GenerateLogFileId(void);
-NS_INLINE TLSLogFileId _GenerateLogFileId()
+static TLSLogFileId _GenerateLogFileId(void);
+static TLSLogFileId _GenerateLogFileId()
 {
     static NSDate *sReferenceDate;
     static dispatch_once_t sOnceToken;
@@ -58,17 +60,17 @@ NS_INLINE TLSLogFileId _GenerateLogFileId()
     return (TLSLogFileId)ti;
 }
 
-NS_INLINE NSString *_GenerateLogFileName(NSString* __nonnull prefix, TLSLogFileId fileId);
-NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
+static NSString *_GenerateLogFileName(NSString* __nonnull prefix, TLSLogFileId fileId);
+static NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 {
     return [NSString stringWithFormat:@"%@%qu.%@", prefix, fileId, TLSRollingFileOutputStreamDefaultLogFileExtension];
 }
 
 @interface TLSRollingFileOutputStream (Private)
-- (BOOL)tls_private_rolloverIfNeeded;
-- (BOOL)tls_private_purgeOldLogsIfNeeded;
-- (NSArray<NSString *> *)tls_private_logFiles;
-- (void)tls_private_writeStartupTimestampInfo;
+static BOOL _rolloverIfNeeded(SELF_ARG);
+static BOOL _purgeOldLogsIfNeeded(SELF_ARG);
+static NSArray<NSString *> * __nullable _GetLogFiles(SELF_ARG);
+static void _writeStartupTimestampInfo(SELF_ARG);
 @end
 
 @implementation TLSRollingFileOutputStream
@@ -83,7 +85,8 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     return [self initWithLogFileDirectoryPath:logFileDirectoryPath error:NULL];
 }
 
-- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath error:(out NSError **)errorOut
+- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath
+                                       error:(out NSError **)errorOut
 {
     return [self initWithLogFileDirectoryPath:logFileDirectoryPath
                                 logFilePrefix:TLSRollingFileOutputStreamDefaultLogFileExtension
@@ -92,7 +95,10 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
                                         error:errorOut];
 }
 
-- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath logFilePrefix:(NSString *)logFilePrefix maxLogFiles:(NSUInteger)maxLogFiles maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile
+- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath
+                               logFilePrefix:(NSString *)logFilePrefix
+                                 maxLogFiles:(NSUInteger)maxLogFiles
+                          maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile
 {
     return [self initWithLogFileDirectoryPath:logFileDirectoryPath
                                 logFilePrefix:logFilePrefix
@@ -101,7 +107,11 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
                                         error:NULL];
 }
 
-- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath logFilePrefix:(NSString *)logFilePrefix maxLogFiles:(NSUInteger)maxLogFiles maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile error:(out NSError **)errorOut // NS_DESIGNATED_INIIALIZER
+- (instancetype)initWithLogFileDirectoryPath:(NSString *)logFileDirectoryPath
+                               logFilePrefix:(NSString *)logFilePrefix
+                                 maxLogFiles:(NSUInteger)maxLogFiles
+                          maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile
+                                       error:(out NSError **)errorOut // NS_DESIGNATED_INIIALIZER
 {
     // allocation preconditions
     if (errorOut) {
@@ -140,7 +150,7 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
         _maxLogFiles = maxLogFiles;
         _logFilePrefix = [logFilePrefix copy];
 
-        [self tls_private_purgeOldLogsIfNeeded];
+        _purgeOldLogsIfNeeded(self);
         [self tls_fileOutputEventFinished:TLSRollingFileOutputEventInitialize
                                  info:@{ TLSRollingFileOutputEventKeyNewLogFilePath : _logFilePath }];
 
@@ -155,7 +165,9 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     }
 
     if (error) {
-        [self tls_fileOutputEventFailed:TLSRollingFileOutputEventInitialize info:error.userInfo error:error];
+        [self tls_fileOutputEventFailed:TLSRollingFileOutputEventInitialize
+                                   info:error.userInfo
+                                  error:error];
 
         if (errorOut) {
             *errorOut = error;
@@ -171,7 +183,8 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 - (void)outputLogData:(NSData *)data
 {
     NSDictionary *info = @{ TLSRollingFileOutputEventKeyLogData : (data) ?: [NSNull null] };
-    [self tls_fileOutputEventBegan:TLSRollingFileOutputEventOutputLogData info:info];
+    [self tls_fileOutputEventBegan:TLSRollingFileOutputEventOutputLogData
+                              info:info];
 
     // The only way `data` can be `nil` is if the caller coersed it to be a `nonnull` argument.
     // Since we are just wrapping the behavior of `outputLogData:` we MUST NOT change its behavior
@@ -179,9 +192,10 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     // implementation can maintain ownership of acting upon `data`.
     [super outputLogData:(NSData * __nonnull)data];
 
-    [self tls_fileOutputEventFinished:TLSRollingFileOutputEventOutputLogData info:info];
-    if ([self tls_private_rolloverIfNeeded]) {
-        [self tls_private_purgeOldLogsIfNeeded];
+    [self tls_fileOutputEventFinished:TLSRollingFileOutputEventOutputLogData
+                                 info:info];
+    if (_rolloverIfNeeded(self)) {
+        _purgeOldLogsIfNeeded(self);
     }
 }
 
@@ -194,7 +208,7 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     }
 
     [self tls_flush];
-    NSArray<NSString *> *logs = [self tls_private_logFiles];
+    NSArray<NSString *> *logs = _GetLogFiles(self);
     NSString *logDirectoryPath = self.logFileDirectoryPath;
     NSMutableData *data = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
@@ -223,7 +237,8 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 
 #pragma mark - TLSFileOutputStreamEvent protocol implementation
 
-- (void)tls_fileOutputEventBegan:(TLSFileOutputEvent)event info:(NSDictionary *)info
+- (void)tls_fileOutputEventBegan:(TLSFileOutputEvent)event
+                            info:(NSDictionary *)info
 {
     if (TLSRollingFileOutputEventRolloverLogs == event) {
         NSString *newFile = info[TLSRollingFileOutputEventKeyNewLogFilePath];
@@ -236,16 +251,17 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     }
 }
 
-- (void)tls_fileOutputEventFinished:(TLSFileOutputEvent)event info:(NSDictionary *)info
+- (void)tls_fileOutputEventFinished:(TLSFileOutputEvent)event
+                               info:(NSDictionary *)info
 {
     if (TLSRollingFileOutputEventInitialize == event) {
-        [self tls_private_writeStartupTimestampInfo];
+        _writeStartupTimestampInfo(self);
     } else if (TLSRollingFileOutputEventRolloverLogs == event) {
         NSString *oldFile = info[TLSRollingFileOutputEventKeyOldLogFilePath];
         [self writeString:LOG_EVENT_PREFIX @"... continuing log from "];
         [self writeString:oldFile];
         [self writeNewline];
-        [self tls_private_writeStartupTimestampInfo];
+        _writeStartupTimestampInfo(self);
     } else if (TLSRollingFileOutputEventPruneLogs == event) {
         [self writeString:LOG_EVENT_PREFIX @"logs successfully pruned."];
         [self writeNewline];
@@ -257,7 +273,9 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     }
 }
 
-- (void)tls_fileOutputEventFailed:(TLSFileOutputEvent)event info:(NSDictionary *)info error:(NSError *)error
+- (void)tls_fileOutputEventFailed:(TLSFileOutputEvent)event
+                             info:(NSDictionary *)info
+                            error:(NSError *)error
 {
     NSString *message = error.userInfo[@"message"];
     [self writeString:LOG_EVENT_PREFIX @"ERROR - "];
@@ -279,13 +297,17 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 
 #pragma mark - private method implementations
 
-- (BOOL)tls_private_rolloverIfNeeded
+static BOOL _rolloverIfNeeded(SELF_ARG)
 {
+    if (!self) {
+        return NO;
+    }
+
     BOOL didRollover = NO;
 
-    if (_maxBytesPerLogFile < self.bytesWritten) {
+    if (self->_maxBytesPerLogFile < self.bytesWritten) {
 #if DEBUG
-        NSAssert(_maxBytesPerLogFile > 0, @"Max bytes per file must not be 0");
+        NSCAssert(self->_maxBytesPerLogFile > 0, @"Max bytes per file must not be 0");
 #endif
 
         NSFileManager* fm = [NSFileManager defaultManager];
@@ -301,13 +323,14 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
         }
 
 #if DEBUG
-        NSAssert([oldFileDir isEqualToString:[oldFilePath stringByDeletingLastPathComponent]], @"Path missmatch!");
-        NSAssert(![newFilePath isEqualToString:oldFilePath], @"Old path cannot match new path!");
+        NSCAssert([oldFileDir isEqualToString:[oldFilePath stringByDeletingLastPathComponent]], @"Path missmatch!");
+        NSCAssert(![newFilePath isEqualToString:oldFilePath], @"Old path cannot match new path!");
 #endif
 
         NSDictionary *eventInfo = @{ TLSRollingFileOutputEventKeyOldLogFilePath : oldFilePath,
                                      TLSRollingFileOutputEventKeyNewLogFilePath : newFilePath };
-        [self tls_fileOutputEventBegan:TLSRollingFileOutputEventRolloverLogs info:eventInfo];
+        [self tls_fileOutputEventBegan:TLSRollingFileOutputEventRolloverLogs
+                                  info:eventInfo];
 
         NSError *openError;
         if (!(didRollover = [self openLogFilePath:newFilePath error:&openError])) {
@@ -317,26 +340,32 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
                                                             code:errno
                                                         userInfo:@{ @"message" : @"Log could not be rolled over" }]];
         } else {
-            [self tls_fileOutputEventFinished:TLSRollingFileOutputEventRolloverLogs info:eventInfo];
+            [self tls_fileOutputEventFinished:TLSRollingFileOutputEventRolloverLogs
+                                         info:eventInfo];
         }
     }
 
     return didRollover;
 }
 
-- (BOOL)tls_private_purgeOldLogsIfNeeded
+static BOOL _purgeOldLogsIfNeeded(SELF_ARG)
 {
-    NSArray<NSString *>* logs = [self tls_private_logFiles];
+    if (!self) {
+        return NO;
+    }
+
+    NSArray<NSString *>* logs = _GetLogFiles(self);
     BOOL purgeMade = NO;
 
     NSUInteger logFileCount = logs.count;
     NSUInteger maxLogFiles = self.maxLogFiles;
     if (logFileCount > maxLogFiles) {
 #if DEBUG
-        NSAssert(maxLogFiles > 0, @"Must have maximum number of log files be at least 1");
+        NSCAssert(maxLogFiles > 0, @"Must have maximum number of log files be at least 1");
 #endif
 
-        [self tls_fileOutputEventBegan:TLSRollingFileOutputEventPruneLogs info:nil];
+        [self tls_fileOutputEventBegan:TLSRollingFileOutputEventPruneLogs
+                                  info:nil];
 
         NSFileManager *fm = [NSFileManager defaultManager];
         NSString *root = self.logFileDirectoryPath;
@@ -350,9 +379,11 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 
             NSError *err = nil;
             NSDictionary *eventInfo = @{ TLSRollingFileOutputEventKeyOldLogFilePath : nextLog };
-            [self tls_fileOutputEventBegan:TLSRollingFileOutputEventPurgeLog info:eventInfo];
+            [self tls_fileOutputEventBegan:TLSRollingFileOutputEventPurgeLog
+                                      info:eventInfo];
             if ([fm removeItemAtPath:nextLog error:&err]) {
-                [self tls_fileOutputEventFinished:TLSRollingFileOutputEventPurgeLog info:eventInfo];
+                [self tls_fileOutputEventFinished:TLSRollingFileOutputEventPurgeLog
+                                             info:eventInfo];
                 filesToDelete--;
                 purgeMade = YES;
             } else {
@@ -371,24 +402,35 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
                     }
                     errInfo = errInfoM;
                 }
-                [self tls_fileOutputEventFailed:TLSRollingFileOutputEventPurgeLog info:eventInfo error:[NSError errorWithDomain:domain code:code userInfo:errInfo]];
+                [self tls_fileOutputEventFailed:TLSRollingFileOutputEventPurgeLog
+                                           info:eventInfo error:[NSError errorWithDomain:domain code:code userInfo:errInfo]];
             }
         }
 
         if (filesToDelete > 0) {
-            [self tls_fileOutputEventFailed:TLSRollingFileOutputEventPruneLogs info:nil error:[NSError errorWithDomain:NSGenericException code:EIO userInfo:@{ @"message" : @"Could not prune enough logs to reach out log file limit" }]];
+            [self tls_fileOutputEventFailed:TLSRollingFileOutputEventPruneLogs
+                                       info:nil
+                                      error:[NSError errorWithDomain:NSGenericException
+                                                                code:EIO
+                                                            userInfo:@{ @"message" : @"Could not prune enough logs to reach out log file limit" }]];
         } else {
-            [self tls_fileOutputEventFinished:TLSRollingFileOutputEventPruneLogs info:nil];
+            [self tls_fileOutputEventFinished:TLSRollingFileOutputEventPruneLogs
+                                         info:nil];
         }
     }
 
     return purgeMade;
 }
 
-- (NSArray<NSString *> *)tls_private_logFiles
+static NSArray<NSString *> * __nullable _GetLogFiles(SELF_ARG)
 {
+    if (!self) {
+        return nil;
+    }
+
     NSError *err = nil;
-    NSMutableArray<NSString *> *logs = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.logFileDirectoryPath error:&err] mutableCopy];
+    NSMutableArray<NSString *> *logs = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.logFileDirectoryPath
+                                                                                            error:&err] mutableCopy];
 
     if (err) {
         // should this be a TLSFileOutputEvent so we can log it?
@@ -397,11 +439,11 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
 
     @autoreleasepool {
         NSIndexSet *indexSet = [logs indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            return ![(NSString *)obj hasPrefix:_logFilePrefix] || ![[(NSString *)obj pathExtension] isEqualToString:TLSRollingFileOutputStreamDefaultLogFileExtension];
+            return ![(NSString *)obj hasPrefix:self->_logFilePrefix] || ![[(NSString *)obj pathExtension] isEqualToString:TLSRollingFileOutputStreamDefaultLogFileExtension];
         }];
         [logs removeObjectsAtIndexes:indexSet];
 
-        NSUInteger prefixLength = _logFilePrefix.length;
+        NSUInteger prefixLength = self->_logFilePrefix.length;
         [logs sortUsingComparator:^NSComparisonResult (id obj1, id obj2) {
             NSString* logFile1 = [obj1 stringByDeletingPathExtension];
             NSString* logFile2 = [obj2 stringByDeletingPathExtension];
@@ -429,8 +471,12 @@ NS_INLINE NSString *_GenerateLogFileName(NSString* prefix, TLSLogFileId fileId)
     return [logs copy];
 }
 
-- (void)tls_private_writeStartupTimestampInfo
+static void _writeStartupTimestampInfo(SELF_ARG)
 {
+    if (!self) {
+        return;
+    }
+
     [self writeString:LOG_EVENT_PREFIX];
     [self writeString:NSStringFromClass([TLSLoggingService class])];
     [self writeString:@" startup = '"];

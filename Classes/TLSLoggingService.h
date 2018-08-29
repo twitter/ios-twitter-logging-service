@@ -41,7 +41,7 @@
 /**
  Access to the shared `TLSLoggingService` singleton instance.
  */
-+ (nonnull instancetype)sharedInstance __attribute__((const));
++ (nonnull instancetype)sharedInstance;
 
 /**
  Initializer is available for any case where a distinct `TLSLoggingService` would be desired.
@@ -70,6 +70,13 @@
  @param options `TLSLogMessageOptions` to log with (default is `0`)
  @param message the `NSString` formatted message.
  */
-- (void)logWithLevel:(TLSLogLevel)level channel:(nonnull NSString *)channel file:(nonnull NSString *)file function:(nonnull NSString *)function line:(unsigned int)line contextObject:(nullable id)contextObject options:(TLSLogMessageOptions)options message:(nonnull NSString *)message, ... NS_FORMAT_FUNCTION(8,9);
+- (void)logWithLevel:(TLSLogLevel)level
+             channel:(nonnull NSString *)channel
+                file:(nonnull NSString *)file
+            function:(nonnull NSString *)function
+                line:(NSInteger)line
+       contextObject:(nullable id)contextObject
+             options:(TLSLogMessageOptions)options
+             message:(nonnull NSString *)message, ... NS_FORMAT_FUNCTION(8,9);
 
 @end

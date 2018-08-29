@@ -96,7 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param logFileName the short file name to append as a path component to create the full logFilePath
  @param errorOut an output reference to get any errors that occur while creating the output stream.  If there is an error, the return value will be `non-nil`.
  */
-- (nullable instancetype)initWithLogFileDirectoryPath:(NSString*)logFilePath logFileName:(NSString*)logFileName error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithLogFileDirectoryPath:(NSString*)logFilePath
+                                          logFileName:(NSString*)logFileName
+                                                error:(out NSError * __nullable __autoreleasing * __nullable)errorOut NS_DESIGNATED_INITIALIZER;
 
 /**
  Convenience initializer - calls the designated initializer with the `defaultLogFileDirectoryPath`
@@ -104,7 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param logFileName - short name (without path). cannot be nil
  @param errorOut - address of an NSError* to contain any initialization errors
  */
-- (nullable instancetype)initWithLogFileName:(NSString*)logFileName error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
+- (nullable instancetype)initWithLogFileName:(NSString*)logFileName
+                                       error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
 
 /**
  NS_UNAVAILABLE: callers are not allowed to instantiate this class without a logFile name or path

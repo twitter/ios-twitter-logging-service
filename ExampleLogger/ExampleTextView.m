@@ -34,7 +34,7 @@
 {
     self.text = @"";
     [[TLSLoggingService sharedInstance] dispatchAsynchronousTransaction:^{
-        _buffer = @"";
+        self->_buffer = @"";
     }];
 }
 

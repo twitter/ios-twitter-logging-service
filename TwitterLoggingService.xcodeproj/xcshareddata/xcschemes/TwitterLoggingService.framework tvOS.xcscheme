@@ -3,20 +3,20 @@
    LastUpgradeVersion = "0940"
    version = "1.3">
    <BuildAction
-      parallelizeBuildables = "NO"
-      buildImplicitDependencies = "NO">
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "NO"
+            buildForTesting = "YES"
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B31CCEE1858CBC6008B0BF1"
-               BuildableName = "libTwitterLoggingService.a"
-               BlueprintName = "TwitterLoggingService"
+               BlueprintIdentifier = "8BD0D8D12135FD5300044ED6"
+               BuildableName = "TwitterLoggingService.framework"
+               BlueprintName = "TwitterLoggingService.framework tvOS"
                ReferencedContainer = "container:TwitterLoggingService.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B31CCFE1858CBC6008B0BF1"
+               BlueprintIdentifier = "8BD0D8C32135FCD500044ED6"
                BuildableName = "TwitterLoggingServiceTests.xctest"
-               BlueprintName = "TwitterLoggingServiceTests"
+               BlueprintName = "TwitterLoggingServiceTests tvOS"
                ReferencedContainer = "container:TwitterLoggingService.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B31CCEE1858CBC6008B0BF1"
-            BuildableName = "libTwitterLoggingService.a"
-            BlueprintName = "TwitterLoggingService"
+            BlueprintIdentifier = "8BD0D8D12135FD5300044ED6"
+            BuildableName = "TwitterLoggingService.framework"
+            BlueprintName = "TwitterLoggingService.framework tvOS"
             ReferencedContainer = "container:TwitterLoggingService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,9 +64,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B31CCEE1858CBC6008B0BF1"
-            BuildableName = "libTwitterLoggingService.a"
-            BlueprintName = "TwitterLoggingService"
+            BlueprintIdentifier = "8BD0D8D12135FD5300044ED6"
+            BuildableName = "TwitterLoggingService.framework"
+            BlueprintName = "TwitterLoggingService.framework tvOS"
             ReferencedContainer = "container:TwitterLoggingService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -82,9 +82,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B31CCEE1858CBC6008B0BF1"
-            BuildableName = "libTwitterLoggingService.a"
-            BlueprintName = "TwitterLoggingService"
+            BlueprintIdentifier = "8BD0D8D12135FD5300044ED6"
+            BuildableName = "TwitterLoggingService.framework"
+            BlueprintName = "TwitterLoggingService.framework tvOS"
             ReferencedContainer = "container:TwitterLoggingService.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

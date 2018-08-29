@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Convenience Functions
 
 //! Convert the log level to a short parsable string
-FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level) __attribute__((const));
+FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level);
 
 //! A default application log channel if no custom channel is desired
 FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault(void) __attribute__((const));
@@ -63,7 +63,7 @@ FOUNDATION_EXTERN void TLSLogEx(TLSLoggingService * __nullable service,
                                 NSString *channel,
                                 NSString *file,
                                 NSString *function,
-                                unsigned int line,
+                                NSInteger line,
                                 id __nullable contextObject,
                                 TLSLogMessageOptions options,
                                 NSString *format, ...) NS_FORMAT_FUNCTION(9,10);
@@ -74,7 +74,7 @@ FOUNDATION_EXTERN void TLSLogString(TLSLoggingService * __nullable service,
                                     NSString *channel,
                                     NSString *file,
                                     NSString *function,
-                                    unsigned int line,
+                                    NSInteger line,
                                     id __nullable contextObject,
                                     TLSLogMessageOptions options,
                                     NSString *message);
@@ -85,7 +85,7 @@ FOUNDATION_EXTERN void TLSvaLog(TLSLoggingService * __nullable service,
                                 NSString *channel,
                                 NSString *file,
                                 NSString *function,
-                                unsigned int line,
+                                NSInteger line,
                                 id __nullable contextObject,
                                 TLSLogMessageOptions options,
                                 NSString *format,
