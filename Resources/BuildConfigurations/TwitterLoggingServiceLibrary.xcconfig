@@ -51,7 +51,6 @@ LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/
 // Packaging
 
 PRODUCT_NAME = ${PROJECT_NAME}
-PUBLIC_HEADERS_FOLDER_PATH = include/${PRODUCT_NAME}
 
 
 //

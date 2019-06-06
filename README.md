@@ -120,7 +120,7 @@ Setting up your project to use *TwitterLoggingService*:
 
 4) Set up the `TLSLoggingService` singleton on application startup (often in `application:didFinishLaunchingWithOptions:` of your `UIApplication`'s delegate for iOS).
 
-```objc
+```
     @import TLSLoggingKit;
 
     // ...
@@ -174,7 +174,7 @@ As a best practice follow these simple guidelines:
 
 ## TLSLogChannelApplicationDefault function
 
-```objc
+```
     FOUNDATION_EXTERN NSString *TLSLogChannelApplicationDefault() __attribute__((const));
     #define TLSLogChannelDefault TLSLogChannelApplicationDefault()
 ```
@@ -202,7 +202,7 @@ As an example, Twitter extends *TwitterLoggingService* with its own set of macro
 
 ## Gating TLSLog messages
 
-```objc
+```
     BOOL TLSCanLog(TLSLoggingService *service, TLSLogLevel level, NSString *channel, id contextObject); // gate for logging TLSLog messages
 ```
 

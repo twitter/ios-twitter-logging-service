@@ -30,10 +30,15 @@
 
 
 //
+// Arhitectures
+
+SDKROOT = iphoneos
+
+//
 // Build Options (iOS)
 
 ENABLE_BITCODE = NO
-
+ENABLE_TESTABILITY = YES
 
 //
 // Deployment (iOS)
@@ -140,4 +145,10 @@ CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES
 //
 // Swift Compiler - Language
 
-SWIFT_VERSION = 4.0
+// (code has #if swift(>=5.0) to handle both cases).
+//
+// default to 5.0 for Xcode versions 10.2 and beyond.
+SWIFT_VERSION = 5.0
+// but legacy support for using Swift 4.2 when building using Xcode 10.1
+// this specific version must come after the default, or Xcode 10.1 will report an error diagnostic
+SWIFT_VERSION[sdk=*12.1] = 4.2 // (*12.1) == (iphoneos12.1 || iphonesimulator12.1 || tvos*12.1 et al)

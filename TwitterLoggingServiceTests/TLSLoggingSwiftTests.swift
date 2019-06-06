@@ -199,11 +199,20 @@ class TLSLoggingSwiftTest: XCTestCase
         TLSLog.log(TLSLogLevel.alert, "TestChannel", context, "Message with context: \(context)")
         self.waitForExpectations(timeout: 10, handler: nil)
 
-#if DEBUG
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.Debug)
+        expectation = self.expectationForLoggingLevel(TLSLogLevel.debug)
         TLSLog.debug("TestChannel", "Message with context: \(context)")
-        self.waitForExpectationsWithTimeout(10, handler: nil)
-#endif
+        self.waitForExpectations(timeout: 10, handler: nil)
+
+        var delayedDate = Date()
+        func delayedEvaluation() -> String {
+            delayedDate = Date()
+            return delayedDate.description
+        }
+        Thread.sleep(forTimeInterval: 0.000001)
+        let dateBeforeLog = Date()
+        XCTAssert(delayedDate < dateBeforeLog)
+        TLSLog.information("TestChannel", delayedEvaluation())
+        XCTAssert(dateBeforeLog < delayedDate)
     }
 
     func testConsoleOutputStreams()
