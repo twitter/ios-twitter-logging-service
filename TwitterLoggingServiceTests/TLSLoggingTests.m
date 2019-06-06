@@ -400,7 +400,7 @@ static NSMutableDictionary *sRuntimes;
 - (void)testLoggingFile4
 {
     // Test Logging File Creation
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     NSString *restrictedDir = @"/bin";
 #else
     NSString *restrictedDir = @"/";
@@ -556,7 +556,7 @@ static NSMutableDictionary *sRuntimes;
 - (void)testLoggingRollingFile4
 {
     // Test Logging File Creation
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     NSString *restrictedDir = @"/bin";
 #else
     NSString *restrictedDir = @"/";

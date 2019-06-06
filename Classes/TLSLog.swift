@@ -31,13 +31,28 @@ public class TLSLog {
 
      See also: `TLSLogError`, `TLSLogWarning`, `TLSLogInformation` and `TLSLogDebug`
      */
-    public final class func log(_ level: TLSLogLevel, _ channel: String, _ context: Any?, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: Int = #line)
+    public final class func log(_ level: TLSLogLevel,
+                                _ channel: String,
+                                _ context: Any?,
+                                _ message: @autoclosure () -> String,
+                                options: TLSLogMessageOptions = TLSLogMessageOptions(),
+                                file: StaticString = #file,
+                                function: StaticString = #function,
+                                line: Int = #line)
     {
         if (!TLSCanLog(nil, level, channel, context)) {
             return;
         }
 
-        TLSLogString(nil, level, channel, String(describing: file), String(describing: function), Int(line), context, TLSLogMessageOptions(), message())
+        TLSLogString(nil,
+                     level,
+                     channel,
+                     String(describing: file),
+                     String(describing: function),
+                     Int(line),
+                     context,
+                     options,
+                     message())
     }
 
     /**
@@ -45,9 +60,21 @@ public class TLSLog {
 
      TLSLog.error("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public final class func error(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: Int = #line)
+    public final class func error(_ channel: String,
+                                  _ message: @autoclosure () -> String,
+                                  options: TLSLogMessageOptions = TLSLogMessageOptions(),
+                                  file: StaticString = #file,
+                                  function: StaticString = #function,
+                                  line: Int = #line)
     {
-        log(TLSLogLevel.error, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(.error,
+            channel,
+            nil /*context*/,
+            message(),
+            options: options,
+            file: file,
+            function: function,
+            line: line)
     }
 
     /**
@@ -55,9 +82,21 @@ public class TLSLog {
 
      TLSLog.warning("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public final class func warning(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: Int = #line)
+    public final class func warning(_ channel: String,
+                                    _ message: @autoclosure () -> String,
+                                    options: TLSLogMessageOptions = TLSLogMessageOptions(),
+                                    file: StaticString = #file,
+                                    function: StaticString = #function,
+                                    line: Int = #line)
     {
-        log(TLSLogLevel.warning, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(.warning,
+            channel,
+            nil /*context*/,
+            message(),
+            options: options,
+            file: file,
+            function: function,
+            line: line)
     }
 
     /**
@@ -65,9 +104,21 @@ public class TLSLog {
 
      TLSLog.information("ChannelToLog", "This is my log message with info: \(info)")
      */
-    public final class func information(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: Int = #line)
+    public final class func information(_ channel: String,
+                                        _ message: @autoclosure () -> String,
+                                        options: TLSLogMessageOptions = TLSLogMessageOptions(),
+                                        file: StaticString = #file,
+                                        function: StaticString = #function,
+                                        line: Int = #line)
     {
-        log(TLSLogLevel.information, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(.information,
+            channel,
+            nil /*context*/,
+            message(),
+            options: options,
+            file: file,
+            function: function,
+            line: line)
     }
 
     /**
@@ -77,8 +128,20 @@ public class TLSLog {
 
      *Note*: Only logs on `DEBUG` builds
      */
-    public final class func debug(_ channel: String, _ message: @autoclosure () -> String, file: StaticString = #file, function: StaticString = #function, line: Int = #line)
+    public final class func debug(_ channel: String,
+                                  _ message: @autoclosure () -> String,
+                                  options: TLSLogMessageOptions = TLSLogMessageOptions(),
+                                  file: StaticString = #file,
+                                  function: StaticString = #function,
+                                  line: Int = #line)
     {
-        log(TLSLogLevel.debug, channel, nil /*context*/, message, file: file, function: function, line: line)
+        log(.debug,
+            channel,
+            nil /*context*/,
+            message(),
+            options: options,
+            file: file,
+            function: function,
+            line: line)
     }
 }

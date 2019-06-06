@@ -77,8 +77,3 @@ PRODUCT_NAME = ${TARGET_NAME}
 
 SWIFT_OBJC_BRIDGING_HEADER = ${PRODUCT_NAME}/${PRODUCT_NAME}-Bridging-Header.h
 
-
-//
-// Swift Compiler - Language
-
-SWIFT_VERSION = 4.0

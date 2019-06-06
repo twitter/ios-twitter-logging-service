@@ -1,0 +1,38 @@
+//
+//  TwitterLoggingService.xcconfig
+//  TwitterLoggingService
+//
+//  Copyright © 2018 Twitter. All rights reserved.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//          http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+//
+// use this configuration for differences from the default project settings
+// (often recommended by Xcode version upgrades).  for project settings that
+// must differ between Debug configuration & Release configuration, make the
+// specific setting change in the project.pbxproj .
+// (cf https://pewpewthespells.com/blog/xcconfig_guide.html#CondVarConfig for
+// why use of SETTING[config=Debug] does not do what we want.)
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+
+#include "TwitterLoggingService.xcconfig"
+
+
+//
+// Arhitectures
+
+ONLY_ACTIVE_ARCH = YES

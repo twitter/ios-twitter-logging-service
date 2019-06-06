@@ -20,4 +20,4 @@ function ci_demo() {
                build
 }
 
-ci_lib "iPhone 6" && ci_demo "iPhone 6"
+ci_lib "iPhone 8" && ci_demo "iPhone 8"

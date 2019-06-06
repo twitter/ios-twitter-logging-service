@@ -32,13 +32,6 @@ APPLICATION_EXTENSION_API_ONLY = YES
 
 
 //
-// Code Signing
-
-CODE_SIGN_IDENTITY[sdk=iphoneos*] =
-CODE_SIGN_IDENTITY[sdk=tvos*] =
-
-
-//
 // Deployment
 
 INSTALL_PATH = $(LOCAL_LIBRARY_DIR)/Frameworks
@@ -67,18 +60,17 @@ DEFINES_MODULE = YES
 INFOPLIST_FILE = ${PRODUCT_NAME}/Info.plist
 PRODUCT_BUNDLE_IDENTIFIER = com.twitter.$(PRODUCT_NAME:rfc1034identifier)
 PRODUCT_NAME = ${PROJECT_NAME}
-PUBLIC_HEADERS_FOLDER_PATH = ${PRODUCT_NAME}.framework/Headers
 
+
+//
+// Signing
+
+CODE_SIGN_STYLE = Manual
 
 //
 // Static Analyzer - Analysis Policy
 
 RUN_CLANG_STATIC_ANALYZER = $(RUN_CLANG_STATIC_ANALYZER_FOR_$(PRODUCT_NAME))
-
-
-//
-// Swift Compiler - Version
-SWIFT_VERSION = 4.0
 
 
 //
