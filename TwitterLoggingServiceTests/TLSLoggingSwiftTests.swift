@@ -83,10 +83,11 @@ class TLSLoggingSwiftTestMessageInfo : TLSLogMessageInfo
     }
 
     var didComposeFormattedMessage: Bool = false
-    override func composeFormattedMessage() -> String
-    {
+    var lastSeenComposeFormattedMessage: TLSComposeLogMessageInfoOptions = []
+    override func composeFormattedMessage(options: TLSComposeLogMessageInfoOptions = []) -> String {
         didComposeFormattedMessage = true
-        return super.composeFormattedMessage()
+        lastSeenComposeFormattedMessage = options
+        return super.composeFormattedMessage(options: options)
     }
 
     var didComposeFileFunctionLineString: Bool = false
@@ -109,6 +110,7 @@ class TLSLoggingSwiftTestMessageInfo : TLSLogMessageInfo
         didGetFunction = false
         didGetLine = false
         didComposeFormattedMessage = false
+        lastSeenComposeFormattedMessage = []
         didComposeFileFunctionLineString = false
     }
 }
@@ -228,7 +230,7 @@ class TLSLoggingSwiftTest: XCTestCase
         XCTAssertTrue(messageInfo.didGetChannel)
         XCTAssertTrue(messageInfo.didGetMessage)
         XCTAssertTrue(messageInfo.didComposeFileFunctionLineString)
-        XCTAssertFalse(messageInfo.didComposeFormattedMessage) // doesn't use "composeFormattedMessage"
+        XCTAssertTrue(messageInfo.didComposeFormattedMessage)
         messageInfo.reset()
 
         let stdOutOutputStream = TLSStdErrOutputStream()
@@ -262,7 +264,7 @@ class TLSLoggingSwiftTest: XCTestCase
 
         crashlyticsOutputStream.discardLargeLogMessagesOverride = true
         crashlyticsOutputStream.tls_outputLogInfo(messageInfo)
-        XCTAssertTrue(messageInfo.didGetMessage)
+        XCTAssertFalse(messageInfo.didGetMessage) // cached
         XCTAssertTrue(crashlyticsOutputStream.didOutputLogMessageToCrashlytics)
         crashlyticsOutputStream.reset()
         messageInfo.reset()
@@ -275,7 +277,7 @@ class TLSLoggingSwiftTest: XCTestCase
 
         crashlyticsOutputStream.discardLargeLogMessagesOverride = true
         crashlyticsOutputStream.tls_outputLogInfo(longMessageInfo)
-        XCTAssertTrue(longMessageInfo.didGetMessage)
+        XCTAssertFalse(longMessageInfo.didGetMessage) // cached
         XCTAssertFalse(crashlyticsOutputStream.didOutputLogMessageToCrashlytics)
         crashlyticsOutputStream.reset()
         longMessageInfo.reset()
