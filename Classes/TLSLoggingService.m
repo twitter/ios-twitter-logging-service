@@ -643,14 +643,29 @@ NSString *TLSCurrentThreadName()
 
     NSString *name = nil;
     name = [NSThread currentThread].name;
-    if (!name || !name.length) {
-        const char *nameCStr = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
-        if (nameCStr) {
-            name = @(nameCStr);
-            if (!name.length) {
-                name = nil;
-            }
+    if (name.length > 0) {
+        return name;
+    }
+
+    const char *nameCStr = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
+    if (nameCStr) {
+        name = @(nameCStr);
+        if (name.length > 0) {
+            return name;
         }
     }
-    return name;
+
+    do
+    {
+        const size_t nameLen = NAME_MAX + 1;
+        char buffer[nameLen];
+        if (0 == pthread_getname_np(pthread_self(), buffer, nameLen)) {
+            name = @(buffer);
+            if (name.length > 0) {
+                return name;
+            }
+        }
+    } while (0);
+
+    return nil;
 }

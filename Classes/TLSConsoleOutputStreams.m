@@ -40,7 +40,13 @@
 
 - (void)tls_outputLogInfo:(TLSLogMessageInfo *)logInfo
 {
-    fprintf(stderr, "%s\n", [[logInfo composeFormattedMessage] UTF8String]);
+    NSString *message = [logInfo composeFormattedMessageWithOptions:
+                         TLSComposeLogMessageInfoLogTimestampAsLocalTime |
+                         TLSComposeLogMessageInfoLogThreadId |
+                         TLSComposeLogMessageInfoLogChannel |
+                         TLSComposeLogMessageInfoLogLevel |
+                         TLSComposeLogMessageInfoLogCallsiteInfoForWarnings];
+    fprintf(stderr, "%s\n", [message UTF8String]);
 }
 
 - (void)tls_flush
@@ -54,12 +60,12 @@
 
 - (void)tls_outputLogInfo:(TLSLogMessageInfo *)logInfo
 {
-    NSString *fileFunctionInfo = nil;
-    if (logInfo.level <= TLSLogLevelWarning) {
-        fileFunctionInfo = [logInfo composeFileFunctionLineString];
-    }
-
-    NSLog(@"[%@][%@]%@ : %@", logInfo.channel, TLSLogLevelToString(logInfo.level), (fileFunctionInfo) ?: @"", logInfo.message);
+    NSString *message = [logInfo composeFormattedMessageWithOptions:
+                         TLSComposeLogMessageInfoLogChannel |
+                         TLSComposeLogMessageInfoLogLevel |
+                         TLSComposeLogMessageInfoLogCallsiteInfoForWarnings |
+                         TLSComposeLogMessageInfoDoNotCache];
+    NSLog(@"%@", message);
 }
 
 @end
@@ -100,11 +106,17 @@
         type = OS_LOG_TYPE_ERROR;
     }
 
+    NSString *message = [logInfo composeFormattedMessageWithOptions:
+                         TLSComposeLogMessageInfoLogTimestampAsLocalTime |
+                         TLSComposeLogMessageInfoLogThreadId |
+                         TLSComposeLogMessageInfoLogChannel |
+                         TLSComposeLogMessageInfoLogLevel |
+                         TLSComposeLogMessageInfoLogCallsiteInfoForWarnings];
     const BOOL isSensitive = [self logInfoIsSensitive:logInfo];
     if (isSensitive) {
-        os_log_with_type(OS_LOG_DEFAULT, type, "%s", logInfo.composeFormattedMessage.UTF8String);
+        os_log_with_type(OS_LOG_DEFAULT, type, "%s", message.UTF8String);
     } else {
-        os_log_with_type(OS_LOG_DEFAULT, type, "%{public}s", logInfo.composeFormattedMessage.UTF8String);
+        os_log_with_type(OS_LOG_DEFAULT, type, "%{public}s", message.UTF8String);
     }
 #endif // OS_LOG_AVAILABLE
 }

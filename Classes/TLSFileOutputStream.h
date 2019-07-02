@@ -91,6 +91,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSStringEncoding tls_loggedDataEncoding;
 
 /**
+ The format to log the message with.
+ Default is `TLSComposeLogMessageInfoDefaultOptions`
+ */
+@property (nonatomic) TLSComposeLogMessageInfoOptions composeLogMessageOptions;
+
+/**
  Initialize the `TLSFileOutputStream` with the provided settings
  @param logFilePath the directory where the log files will live. cannot be nil
  @param logFileName the short file name to append as a path component to create the full logFilePath

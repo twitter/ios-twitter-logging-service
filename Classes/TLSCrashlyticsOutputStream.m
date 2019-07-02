@@ -26,28 +26,24 @@ static const NSUInteger kMaxLogMessageLength = 16 * 1024;
 
 - (void)tls_outputLogInfo:(TLSLogMessageInfo *)logInfo
 {
-    // String for warnings+
-    NSString *fileFunctionLineString = nil;
-    if (logInfo.level <= TLSLogLevelWarning) {
-        fileFunctionLineString = [logInfo composeFileFunctionLineString];
-    }
-
-    // Construct output message
-    NSString *outputString = [NSString stringWithFormat:@"[%@][%@]%@ : %@", logInfo.channel, TLSLogLevelToString(logInfo.level), (fileFunctionLineString) ?: @"" , logInfo.message];
+    // [CHANNEL][LEVEL]CALLSITE_INFO : MESSAGE
+    NSString *message = [logInfo composeFormattedMessageWithOptions:TLSComposeLogMessageInfoLogChannel |
+                                                                    TLSComposeLogMessageInfoLogLevel |
+                                                                    TLSComposeLogMessageInfoLogCallsiteInfoForWarnings];
 
     // Message too large?
-    if (outputString.length > kMaxLogMessageLength) {
+    if (message.length > kMaxLogMessageLength) {
         if (self.discardLargeLogMessages) {
             // discard
             return;
         }
 
         // Truncate our message
-        outputString = [outputString substringToIndex:kMaxLogMessageLength];
+        message = [message substringToIndex:kMaxLogMessageLength];
     }
 
     // Delegate to the subclass
-    [self outputLogMessageToCrashlytics:outputString];
+    [self outputLogMessageToCrashlytics:message];
 }
 
 - (void)outputLogMessageToCrashlytics:(NSString *)message

@@ -52,7 +52,7 @@ To integrate TwitterLoggingService into your Xcode project using CocoaPods, spec
     use_frameworks!
 
     target "MyApp" do
-        pod 'TwitterLoggingService', '~> 2.5.0'
+        pod 'TwitterLoggingService', '~> 2.7.0'
     end
 ```
 

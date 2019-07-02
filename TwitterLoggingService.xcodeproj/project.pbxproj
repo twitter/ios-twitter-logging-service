@@ -65,7 +65,7 @@
 		8BD0D8E52135FD5300044ED6 /* TLSCrashlyticsOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD3B1858DDAA008B0BF1 /* TLSCrashlyticsOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8BD0D8E62135FD5300044ED6 /* TLSFileOutputStream+Protected.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5C48D2185B7755004F503A /* TLSFileOutputStream+Protected.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8BD0D8E72135FD5300044ED6 /* TLSFileOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DED5FE7194698ED00EDBD9A /* TLSFileOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8BDD73F722A98AD500248FDC /* TwitterLoggingService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BD0D8EC2135FD5300044ED6 /* TwitterLoggingService.framework */; };
+		8BD0D8EF2135FDAA00044ED6 /* TwitterLoggingService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BD0D8EC2135FD5300044ED6 /* TwitterLoggingService.framework */; };
 		8BEA3B231C73A560003CB57F /* TLSLoggingSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA3B181C73A0FF003CB57F /* TLSLoggingSwiftTests.swift */; };
 		8BEA3B241C73A560003CB57F /* TLSLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BEA3B1B1C73A0FF003CB57F /* TLSLoggingTests.m */; };
 		8BEA3B261C73A638003CB57F /* TwitterLoggingService.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B31CD1C1858CD99008B0BF1 /* TwitterLoggingService.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -180,6 +180,8 @@
 		8B31CD391858DC94008B0BF1 /* TLSConsoleOutputStreams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TLSConsoleOutputStreams.m; path = Classes/TLSConsoleOutputStreams.m; sourceTree = SOURCE_ROOT; };
 		8B31CD3B1858DDAA008B0BF1 /* TLSCrashlyticsOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TLSCrashlyticsOutputStream.h; path = Classes/TLSCrashlyticsOutputStream.h; sourceTree = SOURCE_ROOT; };
 		8B31CD3C1858DDAA008B0BF1 /* TLSCrashlyticsOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TLSCrashlyticsOutputStream.m; path = Classes/TLSCrashlyticsOutputStream.m; sourceTree = SOURCE_ROOT; };
+		8B501D6122C6B3EB00108D4F /* TLSExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TLSExt.h; path = TwitterLoggingServiceExt/TLSExt.h; sourceTree = "<group>"; };
+		8B501D6222C6B3EB00108D4F /* TLSExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TLSExt.m; path = TwitterLoggingServiceExt/TLSExt.m; sourceTree = "<group>"; };
 		8B5C48D2185B7755004F503A /* TLSFileOutputStream+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "TLSFileOutputStream+Protected.h"; path = "Classes/TLSFileOutputStream+Protected.h"; sourceTree = SOURCE_ROOT; };
 		8B78F2911C6311E5000194DF /* TLSLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TLSLog.swift; path = Classes/TLSLog.swift; sourceTree = SOURCE_ROOT; };
 		8B7DB1401869EC2600999DA0 /* ExampleLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -201,6 +203,7 @@
 		8B7DB17F1869EF5700999DA0 /* TLSLoggingService+ExampleAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TLSLoggingService+ExampleAdditions.m"; sourceTree = "<group>"; };
 		8B7DB1811869F01600999DA0 /* ExampleTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleTextView.h; sourceTree = "<group>"; };
 		8B7DB1821869F01600999DA0 /* ExampleTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleTextView.m; sourceTree = "<group>"; };
+		8B99CB3522C6BAEC00F60F62 /* TLSExtDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TLSExtDefinitions.h; path = TwitterLoggingServiceExt/TLSExtDefinitions.h; sourceTree = "<group>"; };
 		8BA2E94D1CA4707700ADBC8E /* TLS_Project.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TLS_Project.h; path = Classes/TLS_Project.h; sourceTree = SOURCE_ROOT; };
 		8BAE116F1CB61DC40050F16F /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
 		8BAE11711CB623F60050F16F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
@@ -250,7 +253,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BDD73F722A98AD500248FDC /* TwitterLoggingService.framework in Frameworks */,
+				8BD0D8EF2135FDAA00044ED6 /* TwitterLoggingService.framework in Frameworks */,
 				8BD0D8CB2135FCD500044ED6 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -314,6 +317,7 @@
 		8B31CCE61858CBC6008B0BF1 = {
 			isa = PBXGroup;
 			children = (
+				8B501D6022C6B3B200108D4F /* TwitterLoggingServiceExt */,
 				B3B9E9F41C3AE77200B8A451 /* Resources */,
 				8B31CCF41858CBC6008B0BF1 /* TwitterLoggingService */,
 				8B31CD081858CBC6008B0BF1 /* TwitterLoggingServiceTests */,
@@ -402,6 +406,16 @@
 				8B31CD2E1858DB9F008B0BF1 /* TLSRollingFileOutputStream.m */,
 			);
 			name = "Output Streams";
+			sourceTree = "<group>";
+		};
+		8B501D6022C6B3B200108D4F /* TwitterLoggingServiceExt */ = {
+			isa = PBXGroup;
+			children = (
+				8B501D6122C6B3EB00108D4F /* TLSExt.h */,
+				8B501D6222C6B3EB00108D4F /* TLSExt.m */,
+				8B99CB3522C6BAEC00F60F62 /* TLSExtDefinitions.h */,
+			);
+			name = TwitterLoggingServiceExt;
 			sourceTree = "<group>";
 		};
 		8B7DB1461869EC2600999DA0 /* ExampleLogger */ = {
