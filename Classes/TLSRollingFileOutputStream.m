@@ -477,10 +477,20 @@ static void _writeStartupTimestampInfo(SELF_ARG)
         return;
     }
 
+    static NSDateFormatter *sFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sFormatter = [[NSDateFormatter alloc] init];
+        sFormatter.dateFormat = @"YYYY'-'MM'-'dd HH':'mm':'ss zZ";
+        sFormatter.timeZone = [NSTimeZone localTimeZone];
+    });
+
+    NSString *startupTimestamp = [sFormatter stringFromDate:[TLSLoggingService sharedInstance].startupTimestamp];
+
     [self writeString:LOG_EVENT_PREFIX];
     [self writeString:NSStringFromClass([TLSLoggingService class])];
     [self writeString:@" startup = '"];
-    [self writeString:[[[TLSLoggingService sharedInstance] startupTimestamp] description]];
+    [self writeString:startupTimestamp];
     [self writeString:@"'"];
     [self writeNewline];
 }

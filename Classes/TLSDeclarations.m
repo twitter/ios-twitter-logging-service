@@ -27,7 +27,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
 
 @implementation TLSLogMessageInfo
 {
-    NSString *_formattedMessage;
+    NSDictionary<NSNumber *, NSString *> *_formattedMessages;
     NSString *_fileFunctionLineString;
 }
 
@@ -67,38 +67,116 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
 
 - (NSString *)composeFormattedMessage
 {
-    if (!_formattedMessage) {
+    return [self composeFormattedMessageWithOptions:TLSComposeLogMessageInfoDefaultOptions];
+}
+
+- (NSString *)composeFormattedMessageWithOptions:(TLSComposeLogMessageInfoOptions)options
+{
+    NSNumber *optionsKey = @(options);
+    NSString *composedMessage = _formattedMessages[optionsKey];
+    if (!composedMessage) {
+
         // wrap work in autorelease pool so that on exit memory impact
         // is not different than a property access
+
         @autoreleasepool {
-            NSTimeInterval logLifespan = self.logLifespan;
+
             const TLSLogLevel level = self.level;
+            NSMutableString *mComposedMessage = [[NSMutableString alloc] init];
 
-            NSString *fileFunctionInfo = nil;
-            if (level <= TLSLogLevelWarning) {
-                fileFunctionInfo = [self composeFileFunctionLineString];
+            // TIMESTAMP
+            {
+                NSString *logTimestamp = nil;
+                if (options & TLSComposeLogMessageInfoLogTimestampAsTimeSinceLoggingStarted) {
+                    NSTimeInterval logLifespan = self.logLifespan;
+                    const BOOL negative = logLifespan < 0.0;
+                    if (negative) {
+                        logLifespan *= -1.0;
+                    }
+
+                    unsigned long seconds = (unsigned long)logLifespan;
+                    unsigned long minutes = seconds / 60;
+
+                    const unsigned long msecs = (logLifespan - (NSTimeInterval)seconds) * 1000;
+                    const unsigned long hours = minutes / 60;
+
+                    seconds -= minutes * 60;
+                    minutes -= hours * 60;
+
+                    logTimestamp = [NSString stringWithFormat:((negative) ? @"-%02lu:%02lu:%02lu.%03lu" : @"%03lu:%02lu:%02lu.%03lu"),
+                                    hours,
+                                    minutes,
+                                    seconds,
+                                    msecs];
+                } else if (options & TLSComposeLogMessageInfoLogTimestampAsLocalTime) {
+                    static NSDateFormatter *sFormatter = nil;
+                    static dispatch_once_t onceToken;
+                    dispatch_once(&onceToken, ^{
+                        sFormatter = [[NSDateFormatter alloc] init];
+                        sFormatter.dateFormat = @"HH':'mm':'ss'.'SSS";
+                        sFormatter.timeZone = [NSTimeZone localTimeZone];
+                    });
+                    logTimestamp = [sFormatter stringFromDate:self.timestamp];
+                } else if (options & TLSComposeLogMessageInfoLogTimestampAsUTCTime) {
+                    static NSDateFormatter *sFormatter = nil;
+                    static dispatch_once_t onceToken;
+                    dispatch_once(&onceToken, ^{
+                        sFormatter = [[NSDateFormatter alloc] init];
+                        sFormatter.dateFormat = @"HH':'mm':'ss'.'SSS";
+                        sFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0]; // UTC == GMT
+                    });
+                    logTimestamp = [sFormatter stringFromDate:self.timestamp];
+                }
+
+                if (logTimestamp) {
+                    [mComposedMessage appendFormat:@"[%@]", logTimestamp];
+                }
             }
 
-            const BOOL negative = logLifespan < 0.0;
-            if (negative) {
-                logLifespan *= -1.0;
+            // THREAD
+            if (options & TLSComposeLogMessageInfoLogThreadId || options & TLSComposeLogMessageInfoLogThreadName) {
+                [mComposedMessage appendString:@"["];
+                NSString *threadName = self.threadName;
+                const BOOL hasName = (options & TLSComposeLogMessageInfoLogThreadName && threadName != nil);
+                if (hasName) {
+                    [mComposedMessage appendString:threadName];
+                }
+                if (options & TLSComposeLogMessageInfoLogThreadId) {
+                    [mComposedMessage appendFormat:(hasName) ? @"(0x%x)" : @"0x%x", self.threadId];
+                }
+                [mComposedMessage appendString:@"]"];
             }
 
-            unsigned long seconds = (unsigned long)logLifespan;
-            unsigned long minutes = seconds / 60;
+            // CHANNEL
+            if (options & TLSComposeLogMessageInfoLogChannel) {
+                [mComposedMessage appendFormat:@"[%@]", self.channel];
+            }
 
-            const unsigned long msecs = (logLifespan - (NSTimeInterval)seconds) * 1000;
-            const unsigned long hours = minutes / 60;
+            // LEVEL
+            if (options & TLSComposeLogMessageInfoLogChannel) {
+                [mComposedMessage appendFormat:@"[%@]", TLSLogLevelToString(level)];
+            }
 
-            seconds -= minutes * 60;
-            minutes -= hours * 60;
+            // Call Site Info
+            if ((options & TLSComposeLogMessageInfoLogCallsiteInfoAlways) || ((options & TLSComposeLogMessageInfoLogCallsiteInfoForWarnings) && level <= TLSLogLevelWarning)) {
+                [mComposedMessage appendString:[self composeFileFunctionLineString]];
+            }
 
-            NSString *logTimestamp = [NSString stringWithFormat:((negative) ? @"-%02lu:%02lu:%02lu.%03lu" : @"%03lu:%02lu:%02lu.%03lu"), hours, minutes, seconds, msecs];
+            [mComposedMessage appendFormat:@" : %@", self.message];
 
-            _formattedMessage = [NSString stringWithFormat:@"[%@][0x%x][%@][%@]%@ : %@", logTimestamp, self.threadId, self.channel, TLSLogLevelToString(level), (fileFunctionInfo) ?: @"", self.message];
-        }
+            composedMessage = [mComposedMessage copy];
+            if (0 == (options & TLSComposeLogMessageInfoDoNotCache)) {
+                if (!_formattedMessages) {
+                    _formattedMessages = @{ optionsKey : composedMessage };
+                } else {
+                    NSMutableDictionary<NSNumber *, NSString *> *mMessages = [_formattedMessages mutableCopy];
+                    mMessages[optionsKey] = composedMessage;
+                    _formattedMessages = [mMessages copy];
+                }
+            }
+        } // autoreleasepool
     }
-    return _formattedMessage;
+    return composedMessage;
 }
 
 - (NSString *)composeFileFunctionLineString

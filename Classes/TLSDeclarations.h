@@ -117,6 +117,64 @@ typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
     TLSLogMessageIgnoringMaximumSafeMessageLength = 1 << 0,
 };
 
+/**
+ Options for how to compose a `TLSLogMessageInfo` into a message string
+ Selects which components of the message will be in the composed string.
+ All components will format as `@"[TIMESTAMP][THREAD][CHANNEL][LEVEL](__FILE__:__LINE__ __PRETTY_FUNCTION___) : MESSAGE"`
+ */
+typedef NS_OPTIONS(NSInteger, TLSComposeLogMessageInfoOptions) {
+    /**
+     No options
+     `@" : MESSAGE"`
+     */
+    TLSComposeLogMessageInfoNoOptions = 0,
+
+    //! TIMESTAMP
+
+    //! Log the `TIMESTAMP` as the time since logging started as *HHH:mm:ss.MMM* (hours, minutes, seconds, milliseconds)
+    TLSComposeLogMessageInfoLogTimestampAsTimeSinceLoggingStarted = 1 << 0,
+    //! Log the `TIMESTAMP` as the local time as *HHH:mm:ss.MMM* (hours, minutes, seconds, milliseconds)
+    TLSComposeLogMessageInfoLogTimestampAsLocalTime = 1 << 1,
+    //! Log the `TIMESTAMP` as the UTC time as *HHH:mm:ss.MMM* (hours, minutes, seconds, milliseconds)
+    TLSComposeLogMessageInfoLogTimestampAsUTCTime = 1 << 2,
+
+    //! THREAD [THREADNAME] | [THREADID] | [THREADNAME(THREADID)]
+    //! Log the `THREAD` identifier
+    TLSComposeLogMessageInfoLogThreadId = 1 << 4,
+    //! Log the `THREAD` name. @note Take care since thread names can be long and might not be ideal for all logs.
+    TLSComposeLogMessageInfoLogThreadName = 1 << 5,
+
+    //! CHANNEL
+    //! Log the `CHANNEL`
+    TLSComposeLogMessageInfoLogChannel = 1 << 8,
+
+    //! LEVEL
+    //! Log the `LEVEL`
+    TLSComposeLogMessageInfoLogLevel = 1 << 12,
+
+    //! Callsite Info: (__FILE__:__LINE__ __PRETTY_FUNCTION___)
+    //! Log the callsite info always: `(__FILE__:__LINE__ __PRETTY_FUNCTION___)`
+    TLSComposeLogMessageInfoLogCallsiteInfoAlways = 1 << 16,
+    //! Log the callsite info when message's *level* is `TLSLogLevelWarning` or higher: `(__FILE__:__LINE__ __PRETTY_FUNCTION___)`
+    TLSComposeLogMessageInfoLogCallsiteInfoForWarnings = 1 << 17,
+
+    //! Caching
+    //! Do not cache the composed log message
+    TLSComposeLogMessageInfoDoNotCache = 1 << 31,
+
+    /**
+     Default options
+     `@"[TIMESTAMP][THREADID][CHANNEL][LEVEL](__FILE__:__LINE__ __PRETTY_FUNCTION___) : MESSAGE"`
+     Where `TIMESTAMP` is the time since logging started.
+     Where `(__FILE__:__LINE__ __PRETTY_FUNCTION__)` is only present for Warning and above.
+     */
+    TLSComposeLogMessageInfoDefaultOptions = TLSComposeLogMessageInfoLogTimestampAsTimeSinceLoggingStarted |
+                                             TLSComposeLogMessageInfoLogThreadId |
+                                             TLSComposeLogMessageInfoLogChannel |
+                                             TLSComposeLogMessageInfoLogLevel |
+                                             TLSComposeLogMessageInfoLogCallsiteInfoForWarnings,
+};
+
 #pragma mark - Declarations
 
 /**
@@ -151,11 +209,15 @@ typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
 
 /**
  Composes a log message in predefined format which is cached for the lifetime of this object.
- @return A log message string in the format `@"[TIMESTAMP][THREAD][CHANNEL][LEVEL](__FILE__:__LINE__ __PRETTY_FUNCTION___) : MESSAGE"`
- where the _TIMESTAMP_ is the time *HHH:mm:ss.MMM* (hours, minutes, seconds, milliseconds) since the `TLSLoggingService` was initialized, and
- the `(__FILE__:__LINE__ __PRETTY_FUNCTION___)` part is only in log messages with a *level* of `TLSLogLevelWarning` or higher.
+ @return A log message string using `TLSComposeLogMessageInfoDefaultOptions`
  */
 - (nonnull NSString *)composeFormattedMessage;
+
+/**
+ Composes a log message in predefined format which is cached for the lifetime of this object.
+ @return A log message string using the given `TLSComposeLogMessageInfoOptions` _options_
+ */
+- (nonnull NSString *)composeFormattedMessageWithOptions:(TLSComposeLogMessageInfoOptions)options;
 
 /**
  Composes a string that combines the _file_, _function_ and _line_ information.

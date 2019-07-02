@@ -55,6 +55,7 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
     }
 
     if (self = [super init]) {
+        _composeLogMessageOptions = TLSComposeLogMessageInfoDefaultOptions;
         if (![self openLogFilePath:[logFileDirectoryPath stringByAppendingPathComponent:logFileName] error:errorOut]) {
             return nil;
         }
@@ -135,7 +136,9 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
 
 - (void)tls_outputLogInfo:(TLSLogMessageInfo *)logInfo
 {
-    [self outputLogData:[[logInfo composeFormattedMessage] dataUsingEncoding:self.tls_loggedDataEncoding]];
+    NSString *message = [logInfo composeFormattedMessageWithOptions:self.composeLogMessageOptions];
+    NSData *messageData = [message dataUsingEncoding:self.tls_loggedDataEncoding];
+    [self outputLogData:messageData];
 }
 
 @end

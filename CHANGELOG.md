@@ -2,13 +2,25 @@
 
 ## Info
 
-**Document version:** 2.5.0
+**Document version:** 2.7.0
 
-**Last updated:** 09/13/2016
+**Last updated:** 06/28/2019
 
 **Author:** Nolan O'Brien
 
 ## History
+
+### 2.7.0 (06/28/2019)
+
+- Add support for capturing `os_log` logs executed within a running app.
+  - __TLSExt__ is provided as the interface and is not a part of __TLS__ proper.  This is because __TLSExt__ makes use of private Apple frameworks and would lead to app store rejection.
+  - So, the consumer is responsible to compiling and linking the `TLSExt*.h|m` files themselves and must only do so with non-production builds.
+  - This can be of immense help when dogfooding with developers and teammates with an Enterprise distribution (not Test Flight and not production).
+
+### 2.6.0 (06/11/2019)
+
+- Add options to composing a log message string from `TLSLogMessageInfo`
+  - `TLSComposeLogMessageInfoOptions` provides options for what components to put in the output `composeFormattedMessageWithOptions:` string
 
 ### 2.5.0 (09/13/2016)
 
