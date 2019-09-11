@@ -27,6 +27,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark Helper Macros
+
+/**
+ Helper macro for the file name macro.
+
+ `__FILE__` is the historical C macro that is replaced with the full file path of the current file being compiled (e.g. `/Users/username/workspace/project/source/subfolder/anotherfolder/implementation/file.c`)
+ `__FILE_NAME__` is the new C macro in clang that is replaced with the file name of the current file being compiled (e.g. `file.c`)
+
+ By default, if `__FILE_NAME__` is availble with the current compiler, it will be used.
+ This behavior can be overridden by providing a value for `TLS_FILE_NAME` to the compiler, like `-DTLS_FILE_NAME=__FILE__` or `-DTLS_FILE_NAME=\"redacted\"`
+ */
+#if !defined(TLS_FILE_NAME)
+#ifdef __FILE_NAME__
+#define TLS_FILE_NAME __FILE_NAME__
+#else
+#define TLS_FILE_NAME __FILE__
+#endif
+#endif
+
 #pragma mark Essential Macros
 
 //! Root Macro.  Provide the _level_, _channel_ and format string.

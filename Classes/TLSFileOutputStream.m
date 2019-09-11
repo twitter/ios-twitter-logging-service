@@ -95,13 +95,14 @@ static NSString * const TLSFileOutputEventKeyNewLogFilePath = @"newLogFilePath";
     dispatch_once(&sOnceToken, ^{
         @autoreleasepool {
             NSString *path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#if !TARGET_OS_IPHONE
-            // We're on a shared platform, append the binary name to the logs
-            NSString *binary = TLSGetProcessBinaryName();
-            if (!binary) {
-                binary = @"TLS";
+#if !TARGET_OS_IPHONE || TARGET_OS_MACCATALYST
+            // platform may be non-sandboxed, or "sandbox" may contain sym-links outside of expected sandbox
+            // ensure unique path using bundle-id or process name for safety (if possible)
+            NSString *extraPath = [[NSBundle mainBundle] bundleIdentifier] ?: TLSGetProcessBinaryName() ?: @"TLS";
+            path = [path stringByResolvingSymlinksInPath];
+            if (![path containsString:[NSString stringWithFormat:@"/%@/", extraPath]]) {
+                path = [path stringByAppendingPathComponent:extraPath];
             }
-            path = [path stringByAppendingPathComponent:binary];
 #endif
             _defaultLogFileDirectoryPath = [path stringByAppendingPathComponent:@"logs"];
         }

@@ -63,7 +63,7 @@
  See `TLSLogError`, `TLSLogWarning`, `TLSLogInformation`, `TLSLogDebug`
  @param level the logging level to log at.
  @param channel the logging channel to log at.  If `nil`, won't log.
- @param file the `@__FILE__`
+ @param file the `@__FILE__` (or `__FILE_NAME__` with modern clang compiler) -- use `@TLS_FILE_NAME`
  @param function the `@__FUNCTION__`
  @param line the `__LINE__`
  @param contextObject any additional context to be used when logging (advanced, should often just be `nil`).
