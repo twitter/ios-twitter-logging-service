@@ -251,17 +251,17 @@ static BOOL _LoadLoggingSupportFramework(NSError * __nullable * __nullable outEr
             } \
         } \
     })
-    s_func_os_activity_stream_for_pid = (tls_os_activity_stream_for_pid_t)dlsym(RTLD_DEFAULT, "os_activity_stream_for_pid");
+    s_func_os_activity_stream_for_pid = (tls_os_activity_stream_for_pid_t)dlsym(sLoggingSupportFrameworkHandle, "os_activity_stream_for_pid");
     GET_DLSYM_ERR();
-    s_func_os_activity_stream_resume = (tls_os_activity_stream_resume_t)dlsym(RTLD_DEFAULT, "os_activity_stream_resume");
+    s_func_os_activity_stream_resume = (tls_os_activity_stream_resume_t)dlsym(sLoggingSupportFrameworkHandle, "os_activity_stream_resume");
     GET_DLSYM_ERR();
-    s_func_os_activity_stream_cancel = (tls_os_activity_stream_cancel_t)dlsym(RTLD_DEFAULT, "os_activity_stream_cancel");
+    s_func_os_activity_stream_cancel = (tls_os_activity_stream_cancel_t)dlsym(sLoggingSupportFrameworkHandle, "os_activity_stream_cancel");
     GET_DLSYM_ERR();
-    s_func_os_log_copy_formatted_message = (tls_os_log_copy_formatted_message_t)dlsym(RTLD_DEFAULT, "os_log_copy_formatted_message");
+    s_func_os_log_copy_formatted_message = (tls_os_log_copy_formatted_message_t)dlsym(sLoggingSupportFrameworkHandle, "os_log_copy_formatted_message");
     GET_DLSYM_ERR();
-    s_func_os_activity_stream_set_event_handler = (tls_os_activity_stream_set_event_handler_t)dlsym(RTLD_DEFAULT, "os_activity_stream_set_event_handler");
+    s_func_os_activity_stream_set_event_handler = (tls_os_activity_stream_set_event_handler_t)dlsym(sLoggingSupportFrameworkHandle, "os_activity_stream_set_event_handler");
     GET_DLSYM_ERR();
-    s_func_os_log_get_type = (uint8_t(*)(void *))dlsym(RTLD_DEFAULT, "os_log_get_type");
+    s_func_os_log_get_type = (uint8_t(*)(void *))dlsym(sLoggingSupportFrameworkHandle, "os_log_get_type");
     GET_DLSYM_ERR();
 
     const BOOL didLoadAllSymbols =  s_func_os_activity_stream_set_event_handler != nil &&

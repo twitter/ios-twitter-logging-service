@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param maxSafeLength the maximum length that was exceeded
  @param level The `TLSLogLevel` of the message
  @param channel The channel of the message
- @param file The `@(__FILE__)` of the message
+ @param file The `@(__FILE__)` of the message (or `@(__FILE_NAME__)` on modern clang compilers -- use `@(TLS_FILE_NAME)`
  @param function The `@(__FUNCTION__)` of the message
  @param line The __LINE__ of the message
  @param contextObject the context object of the message (or `nil`)
