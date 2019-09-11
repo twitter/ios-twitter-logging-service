@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.author           = { 'Twitter' => 'opensource@twitter.com' }
   s.source           = { :git => 'https://github.com/twitter/ios-twitter-logging-service.git', :tag => s.version.to_s }
   s.ios.deployment_target = '8.0'
+  s.swift_versions   = [ 5.0 ]
 
   s.subspec 'Default' do |sp|
     sp.source_files = 'Classes/**/*'
