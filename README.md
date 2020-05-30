@@ -227,7 +227,7 @@ AND the given log *channel* has not been cached as a known to be an *always off*
 
 # License
 
-Copyright 2013-2018 Twitter, Inc.
+Copyright 2013-2020 Twitter, Inc.
 
 Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
 

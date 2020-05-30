@@ -3,7 +3,7 @@
 //  TwitterLoggingService
 //
 //  Created on 6/28/19.
-//  Copyright © 2019 Twitter. All rights reserved.
+//  Copyright © 2020 Twitter. All rights reserved.
 //
 
 #include <dlfcn.h>

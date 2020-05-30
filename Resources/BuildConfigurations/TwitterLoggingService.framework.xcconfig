@@ -30,6 +30,9 @@
 
 APPLICATION_EXTENSION_API_ONLY = YES
 
+// FB7419630 - unless dwarf-with-dsym explicitly set, no dSYM will be generated for mac catalyst build
+DEBUG_INFORMATION_FORMAT[sdk=macosx*] = dwarf-with-dsym
+
 
 //
 // Deployment
@@ -48,9 +51,6 @@ SKIP_INSTALL = YES
 
 DYLIB_INSTALL_NAME_BASE = @rpath
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
-
-// necessary for ignoring undefined Crashlytics symbols that will be linked later
-OTHER_LDFLAGS = $(inherited) "-Wl,-U,_CLSLog"
 
 
 //

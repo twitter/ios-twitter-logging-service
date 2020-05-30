@@ -2,13 +2,19 @@
 
 ## Info
 
-**Document version:** 2.7.0
+**Document version:** 2.7.1
 
-**Last updated:** 06/28/2019
+**Last updated:** 04/12/2020
 
 **Author:** Nolan O'Brien
 
 ## History
+
+### 2.7.1 (04/12/2020)
+ 
+ - Increase use of  `@autoreleasepool` to keep memory management tighter
+ - Improve at launch perf by deferring the pruning of old files for `TLSRollingFileOutputStream`
+ - Other miscellaneous bug fixes and cleanup
 
 ### 2.7.0 (06/28/2019)
 

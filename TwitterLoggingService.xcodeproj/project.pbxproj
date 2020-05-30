@@ -700,7 +700,7 @@
 			attributes = {
 				CLASSPREFIX = TLS;
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Twitter;
 				TargetAttributes = {
 					8B31CCEE1858CBC6008B0BF1 = {
@@ -1065,7 +1065,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3D82FF9E1E8DB3DC00D01B05 /* TwitterLoggingService.framework.xcconfig */;
 			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				"DEBUG_INFORMATION_FORMAT[sdk=macosx*]" = dwarf;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1101,7 +1101,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_VERSION = A;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
@@ -1139,7 +1138,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";

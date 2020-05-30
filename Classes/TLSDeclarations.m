@@ -153,7 +153,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
             }
 
             // LEVEL
-            if (options & TLSComposeLogMessageInfoLogChannel) {
+            if (options & TLSComposeLogMessageInfoLogLevel) {
                 [mComposedMessage appendFormat:@"[%@]", TLSLogLevelToString(level)];
             }
 

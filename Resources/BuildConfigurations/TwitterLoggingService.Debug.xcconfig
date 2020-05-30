@@ -2,7 +2,7 @@
 //  TwitterLoggingService.xcconfig
 //  TwitterLoggingService
 //
-//  Copyright © 2018 Twitter. All rights reserved.
+//  Copyright © 2020 Twitter. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -36,3 +36,15 @@
 // Arhitectures
 
 ONLY_ACTIVE_ARCH = YES
+
+//
+// Build Options
+
+// no need for dSYM when building Debug Configuration
+DEBUG_INFORMATION_FORMAT = dwarf
+
+//
+// Swift Compiler Flags - Custom Flags
+
+// when building for DEBUG, the DEBUG flag should be set
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) DEBUG
