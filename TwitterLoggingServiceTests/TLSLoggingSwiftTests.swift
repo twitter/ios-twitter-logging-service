@@ -151,8 +151,8 @@ class TLSLoggingSwiftTestServiceDelegate : NSObject, TLSLoggingServiceDelegate
 
         DispatchQueue.main.async(execute: {
             NotificationCenter.default.post(name: .LoggingSwiftTestDiscardedMessageNotification, object: nil)
-        });
-        return 0;
+        })
+        return 0
     }
 }
 
@@ -170,40 +170,41 @@ class TLSLoggingSwiftTest: XCTestCase
         super.tearDown()
     }
 
-    func expectationForLoggingLevel(_ level: TLSLogLevel) -> XCTestExpectation {
-        return self.expectation(forNotification: NSNotification.Name(rawValue: Notification.Name.LoggingSwiftTestOutputStreamNotification.rawValue), object: nil, handler: { (note: Notification) in
+    func setExpectationForLoggingLevel(_ level: TLSLogLevel)  {
+        _ = expectation(forNotification: .LoggingSwiftTestOutputStreamNotification, object: nil) { note in
             let messageInfo: TLSLogMessageInfo = note.object as! TLSLogMessageInfo
             return messageInfo.level == level
-        })
+        }
     }
 
-    func dummyLogMessageInfo(_ message: String = "Some Message") -> TLSLoggingSwiftTestMessageInfo
-    {
-        return TLSLoggingSwiftTestMessageInfo(level: TLSLogLevel.error, file:#file, function:#function ,line:#line, channel: "SomeChannel", timestamp: Date(), logLifespan: 0.1, threadId: 1, threadName: TLSCurrentThreadName(), contextObject: nil, message: message)
+    func dummyLogMessageInfo(_ message: String = "Some Message") -> TLSLoggingSwiftTestMessageInfo {
+        return TLSLoggingSwiftTestMessageInfo(level: .error, file:#file, function:#function ,line:#line, channel: "SomeChannel", timestamp: Date(), logLifespan: 0.1, threadId: 1, threadName: TLSCurrentThreadName(), contextObject: nil, message: message)
     }
 
     func testSwiftLogging() {
         let context = Date()
 
-        var expectation = self.expectationForLoggingLevel(TLSLogLevel.error)
+        setExpectationForLoggingLevel(.error)
         TLSLog.error("TestChannel", "Message with context: \(context)")
-        self.waitForExpectations(timeout: 10, handler: nil)
+        waitForExpectations(timeout: 10)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.warning)
+        setExpectationForLoggingLevel(.warning)
         TLSLog.warning("TestChannel", "Message with context: \(context)")
-        self.waitForExpectations(timeout: 10, handler: nil)
+        waitForExpectations(timeout: 10)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.information)
+        setExpectationForLoggingLevel(.information)
         TLSLog.information("TestChannel", "Message with context: \(context)")
-        self.waitForExpectations(timeout: 10, handler: nil)
+        waitForExpectations(timeout: 10)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.alert)
-        TLSLog.log(TLSLogLevel.alert, "TestChannel", context, "Message with context: \(context)")
-        self.waitForExpectations(timeout: 10, handler: nil)
+        setExpectationForLoggingLevel(.alert)
+        TLSLog.log(.alert, "TestChannel", context, "Message with context: \(context)")
+        waitForExpectations(timeout: 10)
 
-        expectation = self.expectationForLoggingLevel(TLSLogLevel.debug)
-        TLSLog.debug("TestChannel", "Message with context: \(context)")
-        self.waitForExpectations(timeout: 10, handler: nil)
+#if DEBUG
+        setExpectationForLoggingLevel(.debug)
+        TLSLog.debug("TestChannel", "Message with context: \(context)") // documentation explicitly states this only logs to debug builds
+        waitForExpectations(timeout: 10)
+#endif
 
         var delayedDate = Date()
         func delayedEvaluation() -> String {

@@ -41,7 +41,7 @@ public class TLSLog {
                                 line: Int = #line)
     {
         if (!TLSCanLog(nil, level, channel, context)) {
-            return;
+            return
         }
 
         TLSLogString(nil,

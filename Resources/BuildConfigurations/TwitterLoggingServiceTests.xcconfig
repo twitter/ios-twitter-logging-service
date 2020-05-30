@@ -61,9 +61,6 @@ IPHONEOS_DEPLOYMENT_TARGET = 8.0
 
 LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
 
-// necessary for ignoring undefined Crashlytics symbols that this Test target doesn't need
-OTHER_LDFLAGS = $(inherited) "-Wl,-U,_CLSLog"
-
 
 //
 // Packaging
@@ -71,6 +68,13 @@ OTHER_LDFLAGS = $(inherited) "-Wl,-U,_CLSLog"
 INFOPLIST_FILE = ${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist
 PRODUCT_BUNDLE_IDENTIFIER = com.twitter.${PRODUCT_NAME:rfc1034identifier}
 PRODUCT_NAME = ${TARGET_NAME}
+
+
+// Signing
+
+// This is the result of setting "Sign to run locally" in "Signing & Capabilities" for mac (catalyst)
+CODE_SIGN_IDENTITY[sdk=macosx*] = -
+
 
 //
 // Swift Compiler - General

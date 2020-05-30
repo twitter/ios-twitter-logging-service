@@ -187,11 +187,13 @@ static void _nonquickFilter_resetQuickFilter(SELF_ARG,
     }
 
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
-    dispatch_sync(self->_quickFilterQueue, ^{
-        self->_quickFilterLevels = SANITIZED_LEVEL(TLSLogLevelMaskAll);
-        [self->_quickFilterOffChannelsM removeAllObjects];
-        self->_quickFilterOutputStreamCount = outputStreamCount;
-    });
+    @autoreleasepool {
+        dispatch_sync(self->_quickFilterQueue, ^{
+            self->_quickFilterLevels = SANITIZED_LEVEL(TLSLogLevelMaskAll);
+            [self->_quickFilterOffChannelsM removeAllObjects];
+            self->_quickFilterOutputStreamCount = outputStreamCount;
+        });
+    }
 #endif
 }
 
@@ -317,21 +319,25 @@ static void _transaction_logExecute(SELF_ARG,
         }
         if (permittedStreams.count > 0) {
             dispatch_async(self->_loggingQueue, ^{
-                for (id<TLSOutputStream> stream in permittedStreams) {
-                    [stream tls_outputLogInfo:info];
+                @autoreleasepool {
+                    for (id<TLSOutputStream> stream in permittedStreams) {
+                        [stream tls_outputLogInfo:info];
+                    }
                 }
             });
         }
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
         else if (exclusiveFiltering.streamEncountered && (exclusiveFiltering.channel || exclusiveFiltering.level)) {
-            dispatch_sync(self->_quickFilterQueue, ^{
-                if (exclusiveFiltering.channel) {
-                    [self->_quickFilterOffChannelsM addObject:channel];
-                }
-                if (exclusiveFiltering.level) {
-                    self->_quickFilterLevels &= ~(1 << level);
-                }
-            });
+            @autoreleasepool {
+                dispatch_sync(self->_quickFilterQueue, ^{
+                    if (exclusiveFiltering.channel) {
+                        [self->_quickFilterOffChannelsM addObject:channel];
+                    }
+                    if (exclusiveFiltering.level) {
+                        self->_quickFilterLevels &= ~(1 << level);
+                    }
+                });
+            }
         }
 #endif
     }
@@ -376,11 +382,13 @@ static BOOL _canLog(SELF_ARG,
 
     __block BOOL canLog = (nil != channel);
     if (canLog) {
-        dispatch_sync(self->_quickFilterQueue, ^{
-            canLog =    (self->_quickFilterOutputStreamCount > 0)
-                     && TLS_BITMASK_HAS_SUBSET_FLAGS(self->_quickFilterLevels, (1 << level))
-                     && ![self->_quickFilterOffChannelsM containsObject:channel];
-        });
+        @autoreleasepool {
+            dispatch_sync(self->_quickFilterQueue, ^{
+                canLog =    (self->_quickFilterOutputStreamCount > 0)
+                         && TLS_BITMASK_HAS_SUBSET_FLAGS(self->_quickFilterLevels, (1 << level))
+                         && ![self->_quickFilterOffChannelsM containsObject:channel];
+            });
+        }
     }
     return canLog;
 
@@ -437,8 +445,10 @@ static BOOL _canLog(SELF_ARG,
             _nonquickFilter_resetQuickFilter(self, self->_streamsM.count);
 
             dispatch_async(self->_loggingQueue, ^{
-                if ([stream respondsToSelector:@selector(tls_flush)]) {
-                    [stream tls_flush];
+                @autoreleasepool {
+                    if ([stream respondsToSelector:@selector(tls_flush)]) {
+                        [stream tls_flush];
+                    }
                 }
             });
         }
@@ -473,12 +483,18 @@ static BOOL _canLog(SELF_ARG,
 
 - (void)dispatchSynchronousTransaction:(dispatch_block_t)block
 {
-    dispatch_sync(_transactionQueue, block);
+    @autoreleasepool {
+        dispatch_sync(_transactionQueue, block);
+    }
 }
 
 - (void)dispatchAsynchronousTransaction:(dispatch_block_t)block
 {
-    dispatch_async(_transactionQueue, block);
+    dispatch_async(_transactionQueue, ^{
+        @autoreleasepool {
+            block();
+        }
+    });
 }
 
 - (void)flush
@@ -491,13 +507,15 @@ static BOOL _canLog(SELF_ARG,
     }];
 
     // get all log messages off the logging queue and then flush all output streams
-    dispatch_sync(_loggingQueue, ^{
-        for (id<TLSOutputStream> stream in streams) {
-            if ([stream respondsToSelector:@selector(tls_flush)]) {
-                [stream tls_flush];
+    @autoreleasepool {
+        dispatch_sync(_loggingQueue, ^{
+            for (id<TLSOutputStream> stream in streams) {
+                if ([stream respondsToSelector:@selector(tls_flush)]) {
+                    [stream tls_flush];
+                }
             }
-        }
-    });
+        });
+    }
 
     /*
 
@@ -549,9 +567,11 @@ static BOOL _canLog(SELF_ARG,
     }
 
     __block NSData *data;
-    dispatch_sync(_loggingQueue, ^{
-        data = [stream tls_retrieveLoggedData:maxBytes];
-    });
+    @autoreleasepool {
+        dispatch_sync(_loggingQueue, ^{
+            data = [stream tls_retrieveLoggedData:maxBytes];
+        });
+    }
     return data;
 }
 

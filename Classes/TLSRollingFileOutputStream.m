@@ -74,6 +74,9 @@ static void _writeStartupTimestampInfo(SELF_ARG);
 @end
 
 @implementation TLSRollingFileOutputStream
+{
+    BOOL _hasRunPrune;
+}
 
 - (instancetype)initWithOutError:(NSError **)errorOut
 {
@@ -149,10 +152,10 @@ static void _writeStartupTimestampInfo(SELF_ARG);
         _maxBytesPerLogFile = maxBytesPerLogFile;
         _maxLogFiles = maxLogFiles;
         _logFilePrefix = [logFilePrefix copy];
+        _hasRunPrune = NO;
 
-        _purgeOldLogsIfNeeded(self);
         [self tls_fileOutputEventFinished:TLSRollingFileOutputEventInitialize
-                                 info:@{ TLSRollingFileOutputEventKeyNewLogFilePath : _logFilePath }];
+                                     info:@{ TLSRollingFileOutputEventKeyNewLogFilePath : _logFilePath }];
 
     } else if (!error) {
         NSString *exceptionName = NSDestinationInvalidException;
@@ -194,7 +197,7 @@ static void _writeStartupTimestampInfo(SELF_ARG);
 
     [self tls_fileOutputEventFinished:TLSRollingFileOutputEventOutputLogData
                                  info:info];
-    if (_rolloverIfNeeded(self)) {
+    if (_rolloverIfNeeded(self) || !_hasRunPrune) {
         _purgeOldLogsIfNeeded(self);
     }
 }
@@ -354,6 +357,7 @@ static BOOL _purgeOldLogsIfNeeded(SELF_ARG)
         return NO;
     }
 
+    self->_hasRunPrune = YES;
     NSArray<NSString *>* logs = _GetLogFiles(self);
     BOOL purgeMade = NO;
 
@@ -364,15 +368,17 @@ static BOOL _purgeOldLogsIfNeeded(SELF_ARG)
         NSCAssert(maxLogFiles > 0, @"Must have maximum number of log files be at least 1");
 #endif
 
+        NSString *root = self.logFileDirectoryPath;
+        NSString *currentFile = self.logFilePath;
+
         [self tls_fileOutputEventBegan:TLSRollingFileOutputEventPruneLogs
                                   info:nil];
 
         NSFileManager *fm = [NSFileManager defaultManager];
-        NSString *root = self.logFileDirectoryPath;
         NSUInteger filesToDelete = logFileCount - maxLogFiles;
         for (NSUInteger i = 0; i < logFileCount && 0 != filesToDelete; i++) {
             NSString* nextLog = [root stringByAppendingPathComponent:[logs objectAtIndex:i]];
-            if ([nextLog isEqualToString:self.logFilePath]) {
+            if ([nextLog isEqualToString:currentFile]) {
                 // Ran out of logs to purge
                 break;
             }
@@ -403,7 +409,10 @@ static BOOL _purgeOldLogsIfNeeded(SELF_ARG)
                     errInfo = errInfoM;
                 }
                 [self tls_fileOutputEventFailed:TLSRollingFileOutputEventPurgeLog
-                                           info:eventInfo error:[NSError errorWithDomain:domain code:code userInfo:errInfo]];
+                                           info:eventInfo
+                                          error:[NSError errorWithDomain:domain
+                                                                    code:code
+                                                                userInfo:errInfo]];
             }
         }
 
