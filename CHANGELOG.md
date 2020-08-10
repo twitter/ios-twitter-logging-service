@@ -2,14 +2,32 @@
 
 ## Info
 
-**Document version:** 2.7.1
+**Document version:** 2.9.0
 
-**Last updated:** 04/12/2020
+**Last updated:** 08/06/2020
 
 **Author:** Nolan O'Brien
 
 ## History
 
+### 2.9.0 (08/06/2020)
+
+- Drop support for iOS 7, 8 & 9
+
+### 2.8.5 (07/21/2020)
+
+- Improved Swift interface
+
+### 2.8.1 (07/01/2020)
+
+- Convert private static C functions (that take `self` as an argument) to Objective-C `direct` methods
+  - Same low overhead, better calling syntax
+
+### 2.8.0 (06/08/2020)
+
+- Update `initWithOutError:` to `initAndReturnError:` for `TLSRollingFileOutputStream`
+  - More idiomatic
+  
 ### 2.7.1 (04/12/2020)
  
  - Increase use of  `@autoreleasepool` to keep memory management tighter

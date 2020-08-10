@@ -32,12 +32,12 @@ ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 //
 // Deployment
 
-// Continue allowing the ExampleLogger.app (linking the lib.a) to be built for iOS 7
-// (the minimum for Xcode 8, which is the oldest version Apple allows to be used for
-// submitting apps to the app store), even when future versions of Xcode default to
-// a higher minimum deployment target.
-IPHONEOS_DEPLOYMENT_TARGET = 7.0
-
+// Continue allowing the ExampleLogger.app (linking the lib.a) to be built for iOS 10,
+// even when future versions of Xcode default to a higher minimum deployment target.
+IPHONEOS_DEPLOYMENT_TARGET = 10.0
+TVOS_DEPLOYMENT_TARGET = 10.0
+WATCHOS_DEPLOYMENT_TARGET = 3.0
+MACOSX_DEPLOYMENT_TARGET = 10.12
 
 //
 // Packaging

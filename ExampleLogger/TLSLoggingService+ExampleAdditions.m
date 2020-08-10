@@ -29,7 +29,7 @@ static NSMutableSet *sOnChannels = nil;
     sOnChannels = [[NSMutableSet alloc] init];
 
     TLSLoggingService *manager = [TLSLoggingService sharedInstance];
-    [manager addOutputStream:[[TLSRollingFileOutputStream alloc] initWithOutError:NULL]];
+    [manager addOutputStream:[[TLSRollingFileOutputStream alloc] initAndReturnError:NULL]];
     [manager addOutputStream:[[ExampleNSLogOutputStream alloc] init]];
     [manager addOutputStream:[[ExampleCrashlyticsOutputStream alloc] init]]; // no-op since we don't have Crashlytics in the demo
 

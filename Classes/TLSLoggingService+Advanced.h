@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
  synchronously execute the given block on the `TLSLoggingService` instance's transaction queue.
  Don't muck with `TLSLoggingService` or other queues/threads from within the _block_.
  */
-- (void)dispatchSynchronousTransaction:(dispatch_block_t)block;
+- (void)dispatchSynchronousTransaction:(dispatch_block_t NS_NOESCAPE)block;
 /**
  asynchronously execute the given block on the `TLSLoggingService` intances's transaction queue.
  Don't muck with `TLSLoggingService` or other queues/threads from within the _block_.

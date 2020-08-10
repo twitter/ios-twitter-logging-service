@@ -95,17 +95,18 @@ typedef NS_ENUM(TLSFileOutputEvent, TLSRollingFileOutputEvent) {
 - (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath
                                         logFilePrefix:(nullable NSString *)logFilePrefix
                                           maxLogFiles:(NSUInteger)maxLogFiles
-                                   maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile;
+                                   maxBytesPerLogFile:(NSUInteger)maxBytesPerLogFile NS_SWIFT_UNAVAILABLE("use `throws` version for Swift");
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
 - (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath
                                                 error:(out NSError * __nullable __autoreleasing * __nullable)errorOut;
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
-- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath;
+- (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString *)logFileDirectoryPath NS_SWIFT_UNAVAILABLE("use `throws` version for Swift");
 
 /** See initWithLogFileDirectoryPath:logFilePrefix:maxLogFiles:maxBytesPerLogFile:error: */
-- (nullable instancetype)initWithOutError:(__autoreleasing NSError * __nullable * __nullable)errorOut;
+- (nullable instancetype)initAndReturnError:(__autoreleasing NSError * __nullable * __nullable)errorOut;
+- (nullable instancetype)initWithOutError:(__autoreleasing NSError * __nullable * __nullable)errorOut __attribute__((deprecated("use initAndReturnError: instead")));
 
 /** NS_UNAVAILABLE */
 - (nullable instancetype)initWithLogFileDirectoryPath:(nullable NSString*)logFilePath

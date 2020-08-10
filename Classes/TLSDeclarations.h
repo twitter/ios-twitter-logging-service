@@ -22,7 +22,7 @@
 #pragma mark - Constants
 
 /** Domain for errors stemming from TwitterLoggingService APIs */
-FOUNDATION_EXTERN NSString * __nonnull const TLSErrorDomain;
+FOUNDATION_EXTERN NSErrorDomain __nonnull const TLSErrorDomain;
 
 /** Pull out an name for the current thread or `nil` if no name was identified */
 FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName(void);
@@ -40,7 +40,7 @@ FOUNDATION_EXTERN NSString * __nullable TLSCurrentThreadName(void);
  FOUNDATION_EXTERN NSString *TLSLogLevelToString(TLSLogLevel level);
 
  */
-typedef NS_ENUM(NSUInteger, TLSLogLevel)
+typedef NS_ENUM(NSInteger, TLSLogLevel)
 {
     /** Present for syslog compatability */
     TLSLogLevelEmergency = 0,
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, TLSLogLevel)
 };
 
 //! Number of log levels
-static const NSUInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
+static const NSInteger TLSLogLevelCount = TLSLogLevelDebug + 1;
 
 /**
  A set of flags that can be used to identify specific log levels in one mask.
@@ -112,9 +112,9 @@ typedef NS_OPTIONS(NSInteger, TLSLogLevelMask)
 /** Advanced options for logging a message */
 typedef NS_OPTIONS(NSInteger, TLSLogMessageOptions) {
     /** no options (default behavior) */
-    TLSLogMessageNoOptions = 0,
+    TLSLogMessageOptionsNone = 0,
     /** ignore the `[TLSLoggingService maximumSafeMessageLength]` capping of the message */
-    TLSLogMessageIgnoringMaximumSafeMessageLength = 1 << 0,
+    TLSLogMessageOptionsIgnoringMaximumSafeMessageLength = 1 << 0,
 };
 
 /**

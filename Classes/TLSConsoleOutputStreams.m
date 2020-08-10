@@ -20,14 +20,10 @@
 #import "TLSConsoleOutputStreams.h"
 #import "TLSLog.h"
 
-#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_MAC
 #define OS_LOG_AVAILABLE 1
-#elif TARGET_OS_TV && __TV_OS_VERSION_MAX_ALLOWED >= 100000
-#define OS_LOG_AVAILABLE 1
-#elif TARGET_OS_WATCH && __WATCH_OS_VERSION_MAX_ALLOWED >= 30000
+#elif TARGET_OS_WATCH
 #define OS_LOG_AVAILABLE 0 // not on watch
-#elif TARGET_OS_MAC && __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-#define OS_LOG_AVAILABLE 1
 #else
 #define OS_LOG_AVAILABLE 0
 #endif
@@ -77,9 +73,7 @@
 #if OS_LOG_AVAILABLE
 
 #if !TARGET_OS_WATCH
-    if (@available(iOS 10, tvOS 10, macOS 10.12, *)) {
-        return YES;
-    }
+    return YES;
 #endif
 
 #endif // OS_LOG_AVAILABLE

@@ -8,6 +8,7 @@
 
 #import "ExampleConfigureViewController.h"
 #import "ExampleTextView.h"
+#import "TLS_Project.h"
 #import "TLSLoggingService+ExampleAdditions.h"
 
 @interface ExampleConfigureViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -82,7 +83,7 @@
     if (0 == indexPath.section) {
         title = [self.levels objectAtIndex:indexPath.row];
         TLSLogLevelMask mask = [[self.masks objectAtIndex:indexPath.row] integerValue];
-        checked = ([TLSLoggingService sharedInstance].globalLogTextView.permittedLoggingLevels & mask) != 0;
+        checked = TLS_BITMASK_INTERSECTS_FLAGS([TLSLoggingService sharedInstance].globalLogTextView.permittedLoggingLevels, mask);
     } else {
         title = [self.channels objectAtIndex:indexPath.row];
         checked = [[TLSLoggingService sharedInstance] isChannelOn:title];

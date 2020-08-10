@@ -39,9 +39,12 @@ DEBUG_INFORMATION_FORMAT[sdk=macosx*] = dwarf-with-dsym
 
 INSTALL_PATH = $(LOCAL_LIBRARY_DIR)/Frameworks
 
-// Continue allowing the TwitterLoggingService.framework to be built for iOS 8
+// Continue allowing the TwitterLoggingService.framework to be built for iOS 10
 // even when future versions of Xcode suggest a higher default Minimum Deployment Target
-IPHONEOS_DEPLOYMENT_TARGET = 8.0
+IPHONEOS_DEPLOYMENT_TARGET = 10.0
+TVOS_DEPLOYMENT_TARGET = 10.0
+WATCHOS_DEPLOYMENT_TARGET = 3.0
+MACOSX_DEPLOYMENT_TARGET = 10.12
 
 SKIP_INSTALL = YES
 

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TLSLogMessageInfo;
 
 //! Domain for `TLSExt` errors
-FOUNDATION_EXTERN NSString * const TLSExtErrorDomain;
+FOUNDATION_EXTERN NSErrorDomain const TLSExtErrorDomain;
 
 //! block for providing a log message info to log
 typedef void(^TLSExtOSLogActivityLogMessageBlock)(TLSLogMessageInfo *info);

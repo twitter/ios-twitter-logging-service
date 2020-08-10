@@ -49,68 +49,39 @@ FOUNDATION_EXTERN NSString *TLSGetProcessBinaryName(void);
 /** Does the `mask` have none of the bits in `flags` set */
 #define TLS_BITMASK_EXCLUDES_FLAGS(mask, flags)     (((mask) & (flags)) == 0)
 
-#pragma mark - Private Method C Functions Support
+#pragma mark - Objective-C attribute support
 
-/**
- Macro to help with implementing static C-functions instead of private methods
-
-    static NSString *_extendedDescription(PRIVATE_SELF(type))
-    {
-        if (!self) { // ALWAYS perform the `self` nil-check first
-            return nil;
-        }
-        return [[self description] stringByAppendingFormat:@" %@", self->_extendedInfo];
-    }
-
- Can be helpful to define a macro at the top of a .m file for the primary class' `PRIVATE_SELF`.
- Then, that macro can be used in all private function declarations/implementations
- For example:
-
-    // in TLSLoggingService.m
-    #define SELF_ARG PRIVATE_SELF(TLSLoggingService)
-
-    static NSString *_extendedDescription(SELF_ARG)
-    {
-        if (!self) { // ALWAYS perform the `self` nil-check first
-            return nil;
-        }
-        return [[self description] stringByAppendingFormat:@" %@", self->_extendedInfo];
-    }
-
- Calling:
-
-     // private method
-     NSString *description = [self _tip_extendedDescription];
-
-     // static function
-     NSString *description = _extendedDescription(self);
-
- Provide context:
-
-    // Don't just pass ambiguous values to arguments, provide context
-
-    UIImage *nilOverlayImage = nil;
-    UIImage *image = _renderImage(self,
-                                  nilOverlayImage,
-                                  self.textOverlayString,
-                                  [UIColor yellow], // tintColor
-                                  UIImageOrientationUp,
-                                  CGSizeZero, // zero size to render without scaling
-                                  0, // options
-                                  NO); // opaque
-
- Note the context is clear for each:
-
-     1. self is self, of course
-     2. nilOverlayImage: we set up a local variable so we can provide context instead of passing `nil` without context
-     3. self.textOverlayString: variable is descriptive of what it is, enough context on its own
-     4. [UIColor yellow]: it's a color, sure, but what for?  Provide a comment that it is for the `tintColor`
-     5. UIImageOrientationUp: clear that this is the orientation to provide to the render function
-     6. CGSizeZero: it's a size, but what does it mean for a special case value of zero and what's the size for?  Extra context with a descriptive comment.
-     7. 0: provides no insight, commenting that it is for `options` is sufficient at specifying that no options were selected.
-     8. NO: provides no insight, commenting that it is for `opaque` indicates the image render will be non-opaque (and probably have an alpha channel).
- */
-
-#ifndef PRIVATE_SELF
-#define PRIVATE_SELF(type) type * __nullable const self
+#if defined(__has_attribute) && (defined(__IPHONE_14_0) || defined(__MAC_10_16) || defined(__MAC_11_0) || defined(__TVOS_14_0) || defined(__WATCHOS_7_0))
+# define TLS_SUPPORTS_OBJC_DIRECT __has_attribute(objc_direct)
+#else
+# define TLS_SUPPORTS_OBJC_DIRECT 0
 #endif
+
+#if defined(__has_attribute)
+# define TLS_SUPPORTS_OBJC_FINAL  __has_attribute(objc_subclassing_restricted)
+#else
+# define TLS_SUPPORTS_OBJC_FINAL  0
+#endif
+
+#pragma mark - Objective-C Direct Support
+
+#if TLS_SUPPORTS_OBJC_DIRECT
+# define tls_nonatomic_direct     nonatomic,direct
+# define tls_atomic_direct        atomic,direct
+# define TLS_OBJC_DIRECT          __attribute__((objc_direct))
+# define TLS_OBJC_DIRECT_MEMBERS  __attribute__((objc_direct_members))
+#else
+# define tls_nonatomic_direct     nonatomic
+# define tls_atomic_direct        atomic
+# define TLS_OBJC_DIRECT
+# define TLS_OBJC_DIRECT_MEMBERS
+#endif // #if TLS_SUPPORTS_OBJC_DIRECT
+
+#pragma mark - Objective-C Final Support
+
+#if TLS_SUPPORTS_OBJC_FINAL
+# define TLS_OBJC_FINAL   __attribute__((objc_subclassing_restricted))
+#else
+# define TLS_OBJC_FINAL
+#endif // #if TLS_SUPPORTS_OBJC_FINAL
+

@@ -51,9 +51,12 @@ CODE_SIGN_IDENTITY[sdk=tvos*] =
 //
 // Deployment
 
-// Continue allowing the TwitterLoggingServiceTests (linking the .framework) to be built for iOS 8
+// Continue allowing the TwitterLoggingServiceTests (linking the .framework) to be built for iOS 10
 // even when future versions of Xcode suggest a higher default Minimum Deployment Target
-IPHONEOS_DEPLOYMENT_TARGET = 8.0
+IPHONEOS_DEPLOYMENT_TARGET = 10.0
+TVOS_DEPLOYMENT_TARGET = 10.0
+WATCHOS_DEPLOYMENT_TARGET = 3.0
+MACOSX_DEPLOYMENT_TARGET = 10.12
 
 
 //

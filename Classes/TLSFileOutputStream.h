@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Reset the log and clear it
  */
-- (BOOL)resetAndReturnError:(out NSError * __nullable * __nullable)error;
+- (BOOL)resetAndReturnError:(out NSError * __nullable __autoreleasing * __nullable)error;
 
 #pragma mark TLSOutputStream
 
