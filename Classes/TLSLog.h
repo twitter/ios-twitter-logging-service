@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 //! Root Macro.  Provide the _level_, _channel_ and format string.
 #define TLSLog(level, channel, ...) \
     if (TLSCanLog(nil, level, channel, nil)) { \
-        TLSLogEx(nil, level, channel, @(__FILE__), @(__PRETTY_FUNCTION__), __LINE__, nil, TLSLogMessageNoOptions, __VA_ARGS__); \
+        TLSLogEx(nil, level, channel, @(__FILE__), @(__PRETTY_FUNCTION__), __LINE__, nil, TLSLogMessageOptionsNone, __VA_ARGS__); \
     }
 
 //! Log to Error level

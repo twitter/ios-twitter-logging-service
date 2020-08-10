@@ -24,8 +24,6 @@
 
 @class TLSLoggingService;
 
-#define SELF_ARG PRIVATE_SELF(TLSLoggingService)
-
 #define TLSCANLOGMODE_ALWAYS        (0)
 #define TLSCANLOGMODE_CHECKCACHED   (1)
 #define TLSCANLOGMODE_CHECKFULL     (2)
@@ -65,44 +63,39 @@ static NSString * const kMainThreadName = @"Main";
 
 // accessible from external queues
 
-static void _logDispatch(SELF_ARG,
-                         TLSLogLevel level,
-                         NSString *channel,
-                         NSString *file,
-                         NSString *function,
-                         NSInteger line,
-                         id contextObject,
-                         TLSLogMessageOptions options,
-                         NSString *format,
-                         va_list arguments);
-static BOOL _canLog(SELF_ARG,
-                    TLSLogLevel level,
-                    NSString *channel,
-                    id contextObject);
+- (void)_logDispatchWithLevel:(TLSLogLevel)level
+                      channel:(NSString *)channel
+                         file:(NSString *)file
+                     function:(NSString *)function
+                         line:(NSInteger)line
+                      context:(id)contextObject
+                      options:(TLSLogMessageOptions)options
+                       format:(NSString *)format
+                    arguments:(va_list)arguments TLS_OBJC_DIRECT;
+- (BOOL)_canLogWithLevel:(TLSLogLevel)level
+                 channel:(NSString *)channel
+                 context:(id)contextObject TLS_OBJC_DIRECT;
 
 // accessible from any queue except the quickFilter queue
 
-static void _nonquickFilter_resetQuickFilter(SELF_ARG,
-                                             NSUInteger outputStreamCount);
+- (void)_nonquickFilter_resetQuickFilter:(NSUInteger)outputStreamCount TLS_OBJC_DIRECT;
 
 // accessible from transaction queue
 
-static void _transaction_logExecute(SELF_ARG,
-                                    CFAbsoluteTime timestamp,
-                                    TLSLogLevel level,
-                                    NSString *channel,
-                                    NSString *file,
-                                    NSString *function,
-                                    NSInteger line,
-                                    id contextObject,
-                                    unsigned int threadId,
-                                    NSString *threadName,
-                                    NSString *message);
-static TLSFilterStatus _transaction_filterLogStream(SELF_ARG,
-                                                    id<TLSOutputStream> stream,
-                                                    TLSLogLevel level,
-                                                    NSString *channel,
-                                                    id contextObject);
+- (void)_transaction_logExecuteWithTimestamp:(CFAbsoluteTime)timestamp
+                                       level:(TLSLogLevel)level
+                                     channel:(NSString *)channel
+                                        file:(NSString *)file
+                                    function:(NSString *)function
+                                        line:(NSInteger)line
+                                     context:(id)contextObject
+                                    threadId:(unsigned int)threadId
+                                  threadName:(NSString *)threadName
+                                     message:(NSString *)message TLS_OBJC_DIRECT;
+- (TLSFilterStatus)_transaction_filterLogStream:(id<TLSOutputStream>)stream
+                                          level:(TLSLogLevel)level
+                                        channel:(NSString *)channel
+                                        context:(id)contextObject TLS_OBJC_DIRECT;
 
 @end
 
@@ -149,7 +142,7 @@ static TLSFilterStatus _transaction_filterLogStream(SELF_ARG,
 
     [self dispatchAsynchronousTransaction:^{
         [self->_streamsM addObject:stream];
-        _nonquickFilter_resetQuickFilter(self, self->_streamsM.count);
+        [self _nonquickFilter_resetQuickFilter:self->_streamsM.count];
     }];
 }
 
@@ -164,31 +157,25 @@ static TLSFilterStatus _transaction_filterLogStream(SELF_ARG,
 {
     va_list arguments;
     va_start(arguments, message);
-    _logDispatch(self,
-                 level,
-                 channel,
-                 file,
-                 function,
-                 line,
-                 contextObject,
-                 options,
-                 message /*format*/,
-                 arguments);
+    [self _logDispatchWithLevel:level
+                        channel:channel
+                           file:file
+                       function:function
+                           line:line
+                        context:contextObject
+                        options:options
+                         format:message
+                      arguments:arguments];
     va_end(arguments);
 }
 
 #pragma mark Private
 
-static void _nonquickFilter_resetQuickFilter(SELF_ARG,
-                                             NSUInteger outputStreamCount)
+- (void)_nonquickFilter_resetQuickFilter:(NSUInteger)outputStreamCount
 {
-    if (!self) {
-        return;
-    }
-
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
     @autoreleasepool {
-        dispatch_sync(self->_quickFilterQueue, ^{
+        dispatch_sync(_quickFilterQueue, ^{
             self->_quickFilterLevels = SANITIZED_LEVEL(TLSLogLevelMaskAll);
             [self->_quickFilterOffChannelsM removeAllObjects];
             self->_quickFilterOutputStreamCount = outputStreamCount;
@@ -197,28 +184,23 @@ static void _nonquickFilter_resetQuickFilter(SELF_ARG,
 #endif
 }
 
-static void _logDispatch(SELF_ARG,
-                         TLSLogLevel level,
-                         NSString *channel,
-                         NSString *file,
-                         NSString *function,
-                         NSInteger line,
-                         id contextObject,
-                         TLSLogMessageOptions options,
-                         NSString *format,
-                         va_list arguments)
+- (void)_logDispatchWithLevel:(TLSLogLevel)level
+                      channel:(NSString *)channel
+                         file:(NSString *)file
+                     function:(NSString *)function
+                         line:(NSInteger)line
+                      context:(id)contextObject
+                      options:(TLSLogMessageOptions)options
+                       format:(NSString *)format
+                    arguments:(va_list)arguments
 {
-    if (!self) {
-        return;
-    }
-
     if (channel && format) {
         const mach_port_t threadId = pthread_mach_thread_np(pthread_self());
         NSString * const threadName = TLSCurrentThreadName();
         const CFAbsoluteTime timestamp = CFAbsoluteTimeGetCurrent();
         NSString * message = [[NSString alloc] initWithFormat:format arguments:arguments];
 
-        if (TLS_BITMASK_EXCLUDES_FLAGS(options, TLSLogMessageIgnoringMaximumSafeMessageLength)) {
+        if (TLS_BITMASK_EXCLUDES_FLAGS(options, TLSLogMessageOptionsIgnoringMaximumSafeMessageLength)) {
             const NSUInteger maximumMessageLength = self.maximumSafeMessageLength;
             if (maximumMessageLength > 0) {
                 const NSUInteger length = message.length;
@@ -248,39 +230,33 @@ static void _logDispatch(SELF_ARG,
         }
 
         [self dispatchAsynchronousTransaction:^{
-            _transaction_logExecute(self,
-                                    timestamp,
-                                    level,
-                                    channel,
-                                    file,
-                                    function,
-                                    line,
-                                    contextObject,
-                                    threadId,
-                                    threadName,
-                                    message);
+            [self _transaction_logExecuteWithTimestamp:timestamp
+                                                 level:level
+                                               channel:channel
+                                                  file:file
+                                              function:function
+                                                  line:line
+                                               context:contextObject
+                                              threadId:threadId
+                                            threadName:threadName
+                                               message:message];
         }];
     }
 }
 
-static void _transaction_logExecute(SELF_ARG,
-                                    CFAbsoluteTime timestamp,
-                                    TLSLogLevel level,
-                                    NSString *channel,
-                                    NSString *file,
-                                    NSString *function,
-                                    NSInteger line,
-                                    id contextObject,
-                                    unsigned int threadId,
-                                    NSString *threadName,
-                                    NSString *message)
+- (void)_transaction_logExecuteWithTimestamp:(CFAbsoluteTime)timestamp
+                                       level:(TLSLogLevel)level
+                                     channel:(NSString *)channel
+                                        file:(NSString *)file
+                                    function:(NSString *)function
+                                        line:(NSInteger)line
+                                     context:(id)contextObject
+                                    threadId:(unsigned int)threadId
+                                  threadName:(NSString *)threadName
+                                     message:(NSString *)message
 {
-    if (!self) {
-        return;
-    }
-
-    if (self->_streamsM.count > 0) {
-        const NSTimeInterval elapsedTime = timestamp - self->_baseTimestamp;
+    if (_streamsM.count > 0) {
+        const NSTimeInterval elapsedTime = timestamp - _baseTimestamp;
         TLSLogMessageInfo *info = [[TLSLogMessageInfo alloc] initWithLevel:level
                                                                       file:file
                                                                   function:function
@@ -300,12 +276,11 @@ static void _transaction_logExecute(SELF_ARG,
         } exclusiveFiltering;
         exclusiveFiltering.channel = exclusiveFiltering.level = 1;
         exclusiveFiltering.streamEncountered = 0;
-        for (id<TLSOutputStream> stream in self->_streamsM) {
-            const TLSFilterStatus status = _transaction_filterLogStream(self,
-                                                                        stream,
-                                                                        level,
-                                                                        channel,
-                                                                        contextObject);
+        for (id<TLSOutputStream> stream in _streamsM) {
+            const TLSFilterStatus status = [self _transaction_filterLogStream:stream
+                                                                        level:level
+                                                                      channel:channel
+                                                                      context:contextObject];
             if (TLSFilterStatusOK == status) {
                 [permittedStreams addObject:stream];
             }
@@ -318,7 +293,7 @@ static void _transaction_logExecute(SELF_ARG,
             exclusiveFiltering.streamEncountered = 1;
         }
         if (permittedStreams.count > 0) {
-            dispatch_async(self->_loggingQueue, ^{
+            dispatch_async(_loggingQueue, ^{
                 @autoreleasepool {
                     for (id<TLSOutputStream> stream in permittedStreams) {
                         [stream tls_outputLogInfo:info];
@@ -329,7 +304,7 @@ static void _transaction_logExecute(SELF_ARG,
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
         else if (exclusiveFiltering.streamEncountered && (exclusiveFiltering.channel || exclusiveFiltering.level)) {
             @autoreleasepool {
-                dispatch_sync(self->_quickFilterQueue, ^{
+                dispatch_sync(_quickFilterQueue, ^{
                     if (exclusiveFiltering.channel) {
                         [self->_quickFilterOffChannelsM addObject:channel];
                     }
@@ -343,16 +318,11 @@ static void _transaction_logExecute(SELF_ARG,
     }
 }
 
-static TLSFilterStatus _transaction_filterLogStream(SELF_ARG,
-                                                    id<TLSOutputStream> stream,
-                                                    TLSLogLevel level,
-                                                    NSString *channel,
-                                                    id contextObject)
+- (TLSFilterStatus)_transaction_filterLogStream:(id<TLSOutputStream>)stream
+                                          level:(TLSLogLevel)level
+                                        channel:(NSString *)channel
+                                        context:(id)contextObject
 {
-    if (!self) {
-        return 0;
-    }
-
     const TLSLogLevelMask mask = SANITIZED_LEVEL(TLSLogLevelMaskAll);
 
     // Can we log to this level?
@@ -369,21 +339,16 @@ static TLSFilterStatus _transaction_filterLogStream(SELF_ARG,
     return TLSFilterStatusOK;
 }
 
-static BOOL _canLog(SELF_ARG,
-                    TLSLogLevel level,
-                    NSString *channel,
-                    id contextObject)
+- (BOOL)_canLogWithLevel:(TLSLogLevel)level
+                 channel:(NSString *)channel
+                 context:(id)contextObject
 {
-    if (!self) {
-        return NO;
-    }
-
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
 
     __block BOOL canLog = (nil != channel);
     if (canLog) {
         @autoreleasepool {
-            dispatch_sync(self->_quickFilterQueue, ^{
+            dispatch_sync(_quickFilterQueue, ^{
                 canLog =    (self->_quickFilterOutputStreamCount > 0)
                          && TLS_BITMASK_HAS_SUBSET_FLAGS(self->_quickFilterLevels, (1 << level))
                          && ![self->_quickFilterOffChannelsM containsObject:channel];
@@ -396,12 +361,11 @@ static BOOL _canLog(SELF_ARG,
 
     __block BOOL canLog = NO;
     [self dispatchSynchronousTransaction:^{
-        for (id<TLSOutputStream> stream in _streamsM) {
-            TLSFilterStatus status = _transaction_filterLogStream(self,
-                                                                  stream,
-                                                                  level,
-                                                                  channel,
-                                                                  contextObject);
+        for (id<TLSOutputStream> stream in self->_streamsM) {
+            TLSFilterStatus status = [self _transaction_filterLogStream:stream
+                                                                  level:level
+                                                                channel:channel
+                                                                context:contextObject];
             if (TLSFilterStatusOK == status) {
                 canLog = YES;
                 break;
@@ -442,7 +406,7 @@ static BOOL _canLog(SELF_ARG,
         if ([self->_streamsM containsObject:stream]) {
             [self->_streamsM removeObject:stream];
 
-            _nonquickFilter_resetQuickFilter(self, self->_streamsM.count);
+            [self _nonquickFilter_resetQuickFilter:self->_streamsM.count];
 
             dispatch_async(self->_loggingQueue, ^{
                 @autoreleasepool {
@@ -473,7 +437,7 @@ static BOOL _canLog(SELF_ARG,
 #if TLSCANLOGMODE == TLSCANLOGMODE_CHECKCACHED
     dispatch_block_t block = ^{
         if ([self->_streamsM containsObject:stream]) {
-            _nonquickFilter_resetQuickFilter(self, self->_streamsM.count);
+            [self _nonquickFilter_resetQuickFilter:self->_streamsM.count];
         }
     };
 
@@ -481,7 +445,7 @@ static BOOL _canLog(SELF_ARG,
 #endif
 }
 
-- (void)dispatchSynchronousTransaction:(dispatch_block_t)block
+- (void)dispatchSynchronousTransaction:(dispatch_block_t NS_NOESCAPE)block
 {
     @autoreleasepool {
         dispatch_sync(_transactionQueue, block);
@@ -588,16 +552,15 @@ void TLSvaLog(TLSLoggingService *service,
               NSString *format,
               va_list arguments)
 {
-    _logDispatch((service ?: sLoggingService),
-                 level,
-                 channel,
-                 file,
-                 function,
-                 line,
-                 contextObject,
-                 options,
-                 format,
-                 arguments);
+    [(service ?: sLoggingService) _logDispatchWithLevel:level
+                                                channel:channel
+                                                   file:file
+                                               function:function
+                                                   line:line
+                                                context:contextObject
+                                                options:options
+                                                 format:format
+                                              arguments:arguments];
 }
 
 void TLSLogEx(TLSLoggingService *service,
@@ -652,7 +615,9 @@ BOOL TLSCanLog(TLSLoggingService *service,
                NSString *channel,
                id contextObject)
 {
-    return _canLog((service ?: sLoggingService), level, channel, contextObject);
+    return [(service ?: sLoggingService) _canLogWithLevel:level
+                                                  channel:channel
+                                                  context:contextObject];
 }
 
 NSString *TLSCurrentThreadName()

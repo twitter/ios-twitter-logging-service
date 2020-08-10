@@ -13,7 +13,7 @@
 
 #pragma mark - Other definitions
 
-NSString * const TLSExtErrorDomain = @"TLSExt.domain";
+NSErrorDomain const TLSExtErrorDomain = @"TLSExt.domain";
 static NSString * const kFallbackChannel = @"OSLog";
 static NSDate * sOSLogActivityStartTimestamp = nil;
 

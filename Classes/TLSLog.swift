@@ -31,7 +31,8 @@ public class TLSLog {
 
      See also: `TLSLogError`, `TLSLogWarning`, `TLSLogInformation` and `TLSLogDebug`
      */
-    public final class func log(_ level: TLSLogLevel,
+    public final class func log(service: TLSLoggingService? = nil,
+                                _ level: TLSLogLevel,
                                 _ channel: String,
                                 _ context: Any?,
                                 _ message: @autoclosure () -> String,
@@ -40,11 +41,11 @@ public class TLSLog {
                                 function: StaticString = #function,
                                 line: Int = #line)
     {
-        if (!TLSCanLog(nil, level, channel, context)) {
+        if (!TLSCanLog(service, level, channel, context)) {
             return
         }
 
-        TLSLogString(nil,
+        TLSLogString(service,
                      level,
                      channel,
                      String(describing: file),

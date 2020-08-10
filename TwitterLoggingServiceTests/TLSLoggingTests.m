@@ -493,9 +493,9 @@ static NSMutableDictionary *sRuntimes;
 - (void)testLoggingRollingFile1
 {
     TEST_START
-    [sLoggingService addOutputStream:sFileOut];
+    [sLoggingService addOutputStream:sRollingFileOut];
 
-    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-File"];
+    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-Roll"];
 
     for (int i = 0; i < TEST_COUNT; i++) {
         sTestLoggingBlock(channel);
@@ -518,7 +518,7 @@ static NSMutableDictionary *sRuntimes;
 
 - (void)testLoggingRollingFile2
 {
-    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-File"];
+    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-Roll"];
     [sLoggingService removeOutputStream:sRollingFileOut];
     TEST_CHANNEL_ON(channel);
 
@@ -534,7 +534,7 @@ static NSMutableDictionary *sRuntimes;
 - (void)testLoggingRollingFile3
 {
     TEST_START
-    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-FileMx"];
+    NSString *channel = [TLSLogChannelDefault stringByAppendingString:@"-RollMx"];
     TEST_CHANNEL_ON(channel);
     [sLoggingService addOutputStream:sRollingFileOut];
     dispatch_group_t group = dispatch_group_create();
@@ -669,8 +669,11 @@ static NSMutableDictionary *sRuntimes;
         return [path1 compare:path2];
     }];
 
+
+    unsigned long inversionCount = 0;
     NSTimeInterval lastTimestamp = 0;
     __strong NSString *lastLog = nil;
+    NSMutableDictionary<NSString *, NSMutableArray<NSNumber *> *> *perThreadTimestamps = [[NSMutableDictionary alloc] init];
     for (__strong NSString *path in logs) {
         @autoreleasepool {
             path = [sRollingFileOut.logFileDirectoryPath stringByAppendingPathComponent:path];
@@ -686,21 +689,41 @@ static NSMutableDictionary *sRuntimes;
                 }]];
                 if (tokens.count >= 5) {
                     NSTimeInterval ti = NSTimeIntervalFromTLSFileOutputStreamTimestamp(tokens[0]);
+                    NSString *thread = tokens[1];
                     if (ti > 0.0) {
                         XCTAssertTrue([levels containsObject:tokens[3]], @"Log level must be Error, Warning, Information or Debug");
                         XCTAssertTrue([tokens[2] hasPrefix:TLSLogChannelDefault], @"Logging channel is wrong");
                         if (ti < lastTimestamp) {
-                            static unsigned long inversion = 0;
-                            inversion++;
-                            NSLog(@"Timestamps out of order %lu times", inversion);
+                            inversionCount++;
+                            // NSLog(@"Timestamps out of order %lu times", inversionCount);
                         }
                         lastTimestamp = ti;
                         lastLog = line;
                     }
+
+                    NSMutableArray<NSNumber *> *timestamps = perThreadTimestamps[thread];
+                    if (!timestamps) {
+                        timestamps = [[NSMutableArray alloc] init];
+                        perThreadTimestamps[thread] = timestamps;
+                    }
+                    [timestamps addObject:@(ti)];
                 }
             }
         }
     }
+
+    NSLog(@"Timestamps out of order %lu times", inversionCount);
+
+    // Even though timestamps could be out of order in the log, that could be due to multi-threading.
+    // Test to ensure that, per thread, the timestamps _ARE_ in order.
+    [perThreadTimestamps enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull thread, NSMutableArray<NSNumber *> * _Nonnull timestamps, BOOL * _Nonnull stop) {
+        NSTimeInterval previousTimestamp = 0;
+        for (NSNumber *timestampNum in timestamps) {
+            const NSTimeInterval ti = [timestampNum doubleValue];
+            XCTAssertGreaterThanOrEqual(ti, previousTimestamp, @"Incorrect timestamp ordering for thread `%@`!", thread);
+            previousTimestamp = ti;
+        }
+    }];
 }
 
 - (void)testLoggingRollingFile6

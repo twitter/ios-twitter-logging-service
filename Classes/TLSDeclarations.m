@@ -23,7 +23,7 @@
 #import <TwitterLoggingService/TLSDeclarations.h>
 #import <TwitterLoggingService/TLSLog.h>
 
-NSString * const TLSErrorDomain = @"TLSErrorDomain";
+NSErrorDomain const TLSErrorDomain = @"TLSErrorDomain";
 
 @implementation TLSLogMessageInfo
 {
@@ -87,7 +87,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
             // TIMESTAMP
             {
                 NSString *logTimestamp = nil;
-                if (options & TLSComposeLogMessageInfoLogTimestampAsTimeSinceLoggingStarted) {
+                if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogTimestampAsTimeSinceLoggingStarted)) {
                     NSTimeInterval logLifespan = self.logLifespan;
                     const BOOL negative = logLifespan < 0.0;
                     if (negative) {
@@ -108,7 +108,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
                                     minutes,
                                     seconds,
                                     msecs];
-                } else if (options & TLSComposeLogMessageInfoLogTimestampAsLocalTime) {
+                } else if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogTimestampAsLocalTime)) {
                     static NSDateFormatter *sFormatter = nil;
                     static dispatch_once_t onceToken;
                     dispatch_once(&onceToken, ^{
@@ -117,7 +117,7 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
                         sFormatter.timeZone = [NSTimeZone localTimeZone];
                     });
                     logTimestamp = [sFormatter stringFromDate:self.timestamp];
-                } else if (options & TLSComposeLogMessageInfoLogTimestampAsUTCTime) {
+                } else if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogTimestampAsUTCTime)) {
                     static NSDateFormatter *sFormatter = nil;
                     static dispatch_once_t onceToken;
                     dispatch_once(&onceToken, ^{
@@ -134,38 +134,39 @@ NSString * const TLSErrorDomain = @"TLSErrorDomain";
             }
 
             // THREAD
-            if (options & TLSComposeLogMessageInfoLogThreadId || options & TLSComposeLogMessageInfoLogThreadName) {
+            if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogThreadId | TLSComposeLogMessageInfoLogThreadName)) {
                 [mComposedMessage appendString:@"["];
                 NSString *threadName = self.threadName;
-                const BOOL hasName = (options & TLSComposeLogMessageInfoLogThreadName && threadName != nil);
+                const BOOL hasName = TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogThreadName)
+                                     && (threadName != nil);
                 if (hasName) {
                     [mComposedMessage appendString:threadName];
                 }
-                if (options & TLSComposeLogMessageInfoLogThreadId) {
+                if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogThreadId)) {
                     [mComposedMessage appendFormat:(hasName) ? @"(0x%x)" : @"0x%x", self.threadId];
                 }
                 [mComposedMessage appendString:@"]"];
             }
 
             // CHANNEL
-            if (options & TLSComposeLogMessageInfoLogChannel) {
+            if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogChannel)) {
                 [mComposedMessage appendFormat:@"[%@]", self.channel];
             }
 
             // LEVEL
-            if (options & TLSComposeLogMessageInfoLogLevel) {
+            if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogLevel)) {
                 [mComposedMessage appendFormat:@"[%@]", TLSLogLevelToString(level)];
             }
 
             // Call Site Info
-            if ((options & TLSComposeLogMessageInfoLogCallsiteInfoAlways) || ((options & TLSComposeLogMessageInfoLogCallsiteInfoForWarnings) && level <= TLSLogLevelWarning)) {
+            if (TLS_BITMASK_INTERSECTS_FLAGS(options, TLSComposeLogMessageInfoLogCallsiteInfoAlways | TLSComposeLogMessageInfoLogCallsiteInfoForWarnings) && level <= TLSLogLevelWarning) {
                 [mComposedMessage appendString:[self composeFileFunctionLineString]];
             }
 
             [mComposedMessage appendFormat:@" : %@", self.message];
 
             composedMessage = [mComposedMessage copy];
-            if (0 == (options & TLSComposeLogMessageInfoDoNotCache)) {
+            if (TLS_BITMASK_EXCLUDES_FLAGS(options, TLSComposeLogMessageInfoDoNotCache)) {
                 if (!_formattedMessages) {
                     _formattedMessages = @{ optionsKey : composedMessage };
                 } else {

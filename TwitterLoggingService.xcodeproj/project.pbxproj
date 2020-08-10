@@ -700,7 +700,7 @@
 			attributes = {
 				CLASSPREFIX = TLS;
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1150;
 				ORGANIZATIONNAME = Twitter;
 				TargetAttributes = {
 					8B31CCEE1858CBC6008B0BF1 = {
@@ -1045,7 +1045,6 @@
 				SDKROOT = appletvos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -1057,7 +1056,6 @@
 				PRODUCT_NAME = TwitterLoggingService;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
@@ -1086,7 +1084,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				FRAMEWORK_VERSION = A;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1102,7 +1099,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_VERSION = A;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
 				SDKROOT = macosx;
 			};
@@ -1121,7 +1117,7 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twitter.TwitterLoggingService.OSXTwitterLoggingService-frameworkTests";
 				PRODUCT_NAME = TwitterLoggingServiceTests;
 				SDKROOT = macosx;
@@ -1141,7 +1137,7 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "${PRODUCT_NAME}/${PRODUCT_NAME}-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twitter.TwitterLoggingService.OSXTwitterLoggingService-frameworkTests";
 				PRODUCT_NAME = TwitterLoggingServiceTests;
 				SDKROOT = macosx;
